@@ -1,11 +1,10 @@
-// Minimal JS: year stamp + scroll spy for active nav + smooth hash scrolling
+// Year stamp + smooth in-page navigation + simple scroll spy
 document.addEventListener('DOMContentLoaded', () => {
-  // Year
   const y = document.getElementById('year');
   if (y) y.textContent = new Date().getFullYear();
 
-  // Smooth scroll for in-page anchors (works in all modern browsers)
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
+  // Smooth scroll for hash links
+  document.querySelectorAll('nav a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href').slice(1);
       const target = document.getElementById(id);
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Scroll spy (highlights current section link)
+  // Scroll spy to highlight current nav link
   const navLinks = Array.from(document.querySelectorAll('nav a[href^="#"]'));
   const sections = navLinks
     .map(a => document.getElementById(a.getAttribute('href').slice(1)))
@@ -33,10 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.classList.add('active');
       }
     });
-  }, {
-    rootMargin: '-30% 0px -60% 0px', // consider a section "active" when top third enters
-    threshold: [0, 1]
-  });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: [0, 1] });
 
   sections.forEach(sec => observer.observe(sec));
 });
