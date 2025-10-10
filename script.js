@@ -1,298 +1,192 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ===============================
-  // Tron: Ares Live Background (forced motion)
-  // ===============================
+  // ========= Tron: Ares – Red Running Lines over Glassy Black =========
   const canvas = document.getElementById('tronGrid');
   const ctx = canvas.getContext('2d', { alpha: true });
 
-  // --- Theme (slightly lighter backdrop for clarity) ---
-  const THEME = {
-    bgTop:    '#151725', // lighter than before
-    bgBottom: '#121423',
-    tronRed:  (a=1) => `rgba(255, 0, 85, ${a})`,
-    tronCore: (a=1) => `rgba(255, 86, 140, ${a})`,
-    glowShadowColor: 'rgba(255, 0, 85, 1)',
-    vignette: 'rgba(0,0,0,0.32)',   // a touch lighter
-    scanlineAlpha: 0.035
+  // Colors tuned for Ares vibe
+  const ARES = {
+    bgTop:    '#10121c',
+    bgBottom: '#0c0d16',
+    red:   (a=1)=>`rgba(255,0,85,${a})`,
+    core:  (a=1)=>`rgba(255,80,140,${a})`,
+    glow:  'rgba(255,0,85,1)',
+    glassTint: 'rgba(0,0,0,0.25)', // very light vignette
+    scanAlpha: 0.03
   };
 
-  // --- Grid / Lines tuned for clarity ---
-  const GRID = { horizon: 0.42, depthSpeed: 0.015, vLines: 20, hLines: 30, glow: 18, lineWidth: 1.4 };
-  const TRAILS = { count: 70, speed: [0.6, 1.8], size: [1.0, 2.6], life: [2.5, 6.0] };
-  const SPEEDLINES = { max: 120, spawnChance: 0.25, width: [1.5, 3.0], speed: [1.2, 2.6], glow: 18 };
+  // Line field (just the “running lines”, crisp & bright)
+  const LINES = {
+    max: 180,                 // plenty so it's obvious
+    speed: [1.2, 2.8],        // px/ms (after scaling)
+    width: [2, 4],            // line thickness (CSS px)
+    length: [80, 380],        // px
+    glow: 24,                 // canvas shadow blur
+    baseAlpha: [0.55, 0.9],   // visibility range
+    pulseAmp: 0.25            // pulsation intensity
+  };
 
-  // 👉 Force motion ON (ignore prefers-reduced-motion)
-  const prefersReduced = false;
-
-  // DPI-aware canvas sizing
+  // Hi-DPI sizing (draw in CSS pixels)
   let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  function resizeCanvas() {
-    const w = window.innerWidth, h = window.innerHeight;
+  function sizeCanvas() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildScanlinePattern();
+    buildScanlines();
     buildVignette();
   }
   window.addEventListener('resize', () => {
     dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    resizeCanvas();
+    sizeCanvas();
   });
-  resizeCanvas();
+  sizeCanvas();
 
-  // Parallax target
-  let pointer = { x: window.innerWidth/2, y: window.innerHeight*GRID.horizon };
-  let parallax = { x: pointer.x, y: pointer.y };
-  const lerp = (a,b,t) => a + (b - a) * t;
-  function onPointerMove(e) {
-    const x = ('touches' in e) ? e.touches[0].clientX : e.clientX;
-    const y = ('touches' in e) ? e.touches[0].clientY : e.clientY;
-    pointer.x = x; pointer.y = y;
-  }
-  window.addEventListener('mousemove', onPointerMove, { passive: true });
-  window.addEventListener('touchmove', onPointerMove, { passive: true });
-
-  // Background gradient + scanlines
-  let scanlinePattern = null;
-  function buildScanlinePattern() {
+  // Background gradient + subtle scanlines
+  let scanPattern = null;
+  function buildScanlines() {
     const p = document.createElement('canvas');
     p.width = 2; p.height = 3;
     const pctx = p.getContext('2d');
     pctx.fillStyle = 'rgba(255,255,255,0.08)';
     pctx.fillRect(0, 1, 2, 1);
-    scanlinePattern = p;
+    scanPattern = p;
   }
   function drawBackground() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
     const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, THEME.bgTop);
-    g.addColorStop(1, THEME.bgBottom);
+    g.addColorStop(0, ARES.bgTop);
+    g.addColorStop(1, ARES.bgBottom);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
-    if (scanlinePattern) {
-      ctx.globalAlpha = THEME.scanlineAlpha;
-      ctx.fillStyle = ctx.createPattern(scanlinePattern, 'repeat');
+
+    if (scanPattern) {
+      ctx.globalAlpha = ARES.scanAlpha;
+      ctx.fillStyle = ctx.createPattern(scanPattern, 'repeat');
       ctx.fillRect(0, 0, w, h);
       ctx.globalAlpha = 1;
     }
   }
 
-  // Vignette
-  let vignetteCanvas = null;
+  // Vignette (very light so background stays "glassy")
+  let vignette = null;
   function buildVignette() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    const v = document.createElement('canvas');
-    v.width = Math.max(1, w);
-    v.height = Math.max(1, h);
-    const vctx = v.getContext('2d');
-    const rad = Math.hypot(w, h) * 0.75;
-    const grad = vctx.createRadialGradient(w/2, h/2, rad*0.35, w/2, h/2, rad);
+    const w = canvas.width / dpr, h = canvas.height / dpr;
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, w);
+    c.height = Math.max(1, h);
+    const x = c.getContext('2d');
+    const r = Math.hypot(w, h) * 0.75;
+    const grad = x.createRadialGradient(w/2, h/2, r*0.5, w/2, h/2, r);
     grad.addColorStop(0, 'rgba(0,0,0,0)');
-    grad.addColorStop(1, THEME.vignette);
-    vctx.fillStyle = grad;
-    vctx.fillRect(0, 0, w, h);
-    vignetteCanvas = v;
+    grad.addColorStop(1, ARES.glassTint);
+    x.fillStyle = grad;
+    x.fillRect(0, 0, w, h);
+    vignette = c;
   }
 
-  // Perspective helper
-  function projectToScreen(x, z, vpX, vpY, w, h) {
-    const persp = 0.0028;
-    const scale = 1 / (1 + z * persp);
-    return { x: lerp(vpX, x, scale), y: lerp(vpY, h, scale) };
-  }
+  // ----- Running Lines -----
+  class RunningLine {
+    constructor(w, h) { this.w = w; this.h = h; this.reset(true); }
+    reset(first=false) {
+      // Randomize attributes
+      const [minW, maxW] = LINES.width;
+      const [minL, maxL] = LINES.length;
+      const [minS, maxS] = LINES.speed;
+      const [minA, maxA] = LINES.baseAlpha;
 
-  // Light trails
-  class Trail {
-    constructor(w, h) { this.reset(w, h); }
-    reset(w, h) {
-      const [zmin, zmax] = [10, 800];
-      this.z = Math.random() * (zmax - zmin) + zmin;
-      this.x = Math.random() * w;
-      this.y = lerp(h * (GRID.horizon + 0.02), h * 0.98, Math.random());
-      const [smin, smax] = TRAILS.speed;
-      this.speed = Math.random() * (smax - smin) + smin;
-      this.size = Math.random() * (TRAILS.size[1] - TRAILS.size[0]) + TRAILS.size[0];
-      this.life = Math.random() * (TRAILS.life[1] - TRAILS.life[0]) + TRAILS.life[0];
-      this.age = 0;
-    }
-    update(dt, w, h, vpX, vpY) {
-      this.z -= this.speed * 120 * dt;
-      this.age += dt;
-      if (this.z < 4 || this.age > this.life) this.reset(w, h);
-      const p = projectToScreen(this.x, this.z, vpX, vpY, w, h);
-      this.sx = p.x; this.sy = p.y;
-    }
-    draw(ctx) {
-      ctx.save();
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = THEME.glowShadowColor;
-      ctx.fillStyle = THEME.tronCore(0.95);
-      ctx.beginPath();
-      ctx.arc(this.sx, this.sy, this.size, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 0.85;
-      ctx.strokeStyle = THEME.tronRed(0.95);
-      ctx.lineWidth = Math.max(1, this.size * 0.7);
-      ctx.beginPath();
-      ctx.moveTo(this.sx - this.size * 5, this.sy);
-      ctx.lineTo(this.sx, this.sy);
-      ctx.stroke();
-      ctx.restore();
-      ctx.globalAlpha = 1;
-    }
-  }
-  const trails = Array.from({ length: TRAILS.count }, () =>
-    new Trail(canvas.clientWidth, canvas.clientHeight)
-  );
-
-  // Speed lines
-  class SpeedLine {
-    constructor(w, h) { this.w = w; this.h = h; this.reset(); }
-    reset() {
-      this.y = Math.random() * this.h;
-      this.len = Math.random() * (this.w * 0.28) + (this.w * 0.12);
-      const [smin, smax] = SPEEDLINES.speed;
-      this.speed = (Math.random() * (smax - smin) + smin) * (Math.random() < 0.5 ? 1 : -1);
-      this.x = this.speed > 0 ? -this.len : this.w + this.len;
-      this.width = Math.random() * (SPEEDLINES.width[1] - SPEEDLINES.width[0]) + SPEEDLINES.width[0];
-      this.alphaBase = 0.5 + Math.random() * 0.25;
+      this.width = rand(minW, maxW);
+      this.length = rand(minL, maxL);
+      this.speed = rand(minS, maxS) * (Math.random()<0.5?1:-1); // left or right
+      this.y = rand(0, this.h);
       this.phase = Math.random() * Math.PI * 2;
+      this.alphaBase = rand(minA, maxA);
+
+      // Start just off-screen depending on direction
+      this.x = this.speed > 0 ? -this.length - rand(0, 80) : this.w + this.length + rand(0, 80);
+
+      // Spread them evenly on first seed
+      if (first) this.x = Math.random() * this.w;
     }
     update(dt) {
-      this.x += this.speed * 60 * dt;
-      if (this.speed > 0 && this.x > this.w + this.len) this.reset();
-      if (this.speed < 0 && this.x < -this.len) this.reset();
+      this.x += this.speed * (dt * 60); // scale to 60fps feel
+      if (this.speed > 0 && this.x > this.w + this.length + 100) this.reset();
+      if (this.speed < 0 && this.x < -this.length - 100) this.reset();
     }
-    draw(ctx, t) {
-      const pulse = Math.min(1, Math.sin(t * 2 + this.phase) * 0.3 + this.alphaBase);
+    draw(t) {
+      const pulse = Math.min(1, this.alphaBase + Math.sin(t * 2 + this.phase) * LINES.pulseAmp);
+      const x2 = this.speed > 0 ? this.x + this.length : this.x - this.length;
+
+      // Outer red glow
       ctx.save();
       ctx.lineWidth = this.width;
-      ctx.shadowBlur = SPEEDLINES.glow;
-      ctx.shadowColor = THEME.glowShadowColor;
-      // Outer glow
-      ctx.strokeStyle = THEME.tronRed(pulse);
-      ctx.beginPath();
-      ctx.moveTo(this.x, this.y);
-      ctx.lineTo(this.x + (this.speed > 0 ? this.len : -this.len), this.y);
-      ctx.stroke();
-      // Inner core
+      ctx.shadowBlur = LINES.glow;
+      ctx.shadowColor = ARES.glow;
+      ctx.strokeStyle = ARES.red(pulse);
+      ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(x2, this.y); ctx.stroke();
+
+      // Inner bright core
       ctx.shadowBlur = 0;
       ctx.lineWidth = Math.max(1, this.width * 0.65);
-      ctx.strokeStyle = THEME.tronCore(Math.min(1, pulse * 1.15));
+      ctx.strokeStyle = ARES.core(Math.min(1, pulse * 1.15));
       ctx.stroke();
       ctx.restore();
     }
   }
-  const speedLines = [];
-  (function seedSpeedLines(){
-    const max = SPEEDLINES.max;
-    for (let i = 0; i < max * 0.4; i++) speedLines.push(new SpeedLine(canvas.clientWidth, canvas.clientHeight));
-  })();
 
-  // Grid
-  let gridOffsetZ = 0;
-  function drawGrid(dt, vpX, vpY, w, h) {
-    gridOffsetZ += GRID.depthSpeed * 120 * dt;
+  // helpers
+  const rand = (a, b) => a + Math.random() * (b - a);
 
-    ctx.save();
-    ctx.lineWidth = GRID.lineWidth;
-    ctx.shadowBlur = GRID.glow;
-    ctx.shadowColor = THEME.glowShadowColor;
-    ctx.strokeStyle = THEME.tronRed(0.7);
-
-    // verticals
-    for (let i = 0; i <= GRID.vLines; i++) {
-      const t = i / GRID.vLines, x = t * w;
-      ctx.beginPath();
-      ctx.moveTo(x, vpY);
-      ctx.lineTo( (vpX * 0.98) + (x - vpX) * 0.02, h );
-      ctx.stroke();
-    }
-    // horizontals
-    for (let r = 1; r < GRID.hLines; r++) {
-      const z = (r + (gridOffsetZ % 1)) * 12;
-      const l = projectToScreen(0, z, vpX, vpY, w, h);
-      const rgt = projectToScreen(w, z, vpX, vpY, w, h);
-      ctx.beginPath();
-      ctx.moveTo(l.x, l.y);
-      ctx.lineTo(rgt.x, rgt.y);
-      ctx.stroke();
-    }
-    // bright pass
-    ctx.shadowBlur = 0;
-    ctx.lineWidth = GRID.lineWidth * 0.75;
-    ctx.strokeStyle = THEME.tronCore(1);
-    for (let i = 0; i <= GRID.vLines; i++) {
-      const t = i / GRID.vLines, x = t * w;
-      ctx.beginPath();
-      ctx.moveTo(x, vpY);
-      ctx.lineTo( (vpX * 0.98) + (x - vpX) * 0.02, h );
-      ctx.stroke();
-    }
-    for (let r = 1; r < GRID.hLines; r++) {
-      const z = (r + (gridOffsetZ % 1)) * 12;
-      const l = projectToScreen(0, z, vpX, vpY, w, h);
-      const rgt = projectToScreen(w, z, vpX, vpY, w, h);
-      ctx.beginPath();
-      ctx.moveTo(l.x, l.y);
-      ctx.lineTo(rgt.x, rgt.y);
-      ctx.stroke();
-    }
-    ctx.restore();
+  const lines = [];
+  function seedLines() {
+    lines.length = 0;
+    const w = canvas.width / dpr, h = canvas.height / dpr;
+    for (let i = 0; i < LINES.max; i++) lines.push(new RunningLine(w, h));
   }
+  seedLines();
 
-  // Animation loop — always ON
-  let rafId = null;
-  let lastT = performance.now();
-  function frame(now) {
-    const dt = Math.min(0.05, (now - lastT) / 1000);
-    lastT = now;
-
-    parallax.x = lerp(parallax.x, pointer.x, 0.06);
-    parallax.y = lerp(parallax.y, pointer.y, 0.06);
-
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    const vpX = lerp(w * 0.5, parallax.x, 0.2);
-    const vpY = h * GRID.horizon;
+  // Animate
+  let raf = null;
+  let last = performance.now();
+  function tick(now) {
+    const dt = Math.min(0.05, (now - last)/1000); last = now;
+    const t = now * 0.001;
 
     drawBackground();
-    drawGrid(dt, vpX, vpY, w, h);
 
-    for (let i = 0; i < trails.length; i++) {
-      trails[i].update(dt, w, h, vpX, vpY);
-      trails[i].draw(ctx);
-    }
-    if (speedLines.length < SPEEDLINES.max && Math.random() < SPEEDLINES.spawnChance * dt * 60) {
-      speedLines.push(new SpeedLine(w, h));
-    }
-    const t = now * 0.001;
-    for (let i = 0; i < speedLines.length; i++) {
-      speedLines[i].update(dt);
-      speedLines[i].draw(ctx, t);
+    // Draw all running lines
+    for (let i = 0; i < lines.length; i++) {
+      lines[i].update(dt);
+      lines[i].draw(t);
     }
 
-    if (vignetteCanvas) ctx.drawImage(vignetteCanvas, 0, 0);
-    rafId = requestAnimationFrame(frame);
+    // Soft vignette last
+    if (vignette) ctx.drawImage(vignette, 0, 0);
+
+    raf = requestAnimationFrame(tick);
   }
-  rafId = requestAnimationFrame(frame);
+  raf = requestAnimationFrame(tick);
 
-  // Pause when tab hidden (battery friendly)
+  // Re-seed lines on resize so distribution stays nice
+  window.addEventListener('resize', seedLines);
+
+  // Pause when tab is hidden
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) cancelAnimationFrame(rafId);
-    else { lastT = performance.now(); rafId = requestAnimationFrame(frame); }
+    if (document.hidden) cancelAnimationFrame(raf);
+    else { last = performance.now(); raf = requestAnimationFrame(tick); }
   });
 
-  // ===============================
-  // Your site logic (unchanged)
-  // ===============================
+  // ---------------- Your site logic (unchanged) ----------------
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('.tron-section');
   function highlightNavLink() {
     let currentActive = '';
     sections.forEach(section => {
-      const top = section.offsetTop, height = section.clientHeight;
+      const top = section.offsetTop;
+      const height = section.clientHeight;
       if (pageYOffset >= top - height / 3) currentActive = section.id;
     });
     navLinks.forEach(link => {
