@@ -1,48 +1,254 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
-  <title>Tron: Ares — Live Background</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <!-- BACKGROUND -->
-  <canvas id="tronGrid" aria-hidden="true"></canvas>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reimagining University Administration — LSC Best Practices (Phnom Penh)</title>
+<meta name="color-scheme" content="light dark" />
 
-  <!-- CONTENT -->
-  <header class="site-header">
-    <nav class="site-nav">
-      <a class="nav-link" href="#home">Home</a>
-      <a class="nav-link" href="#projects">Projects</a>
-      <a class="nav-link" href="#contact">Contact</a>
-    </nav>
+<!-- Classic, simple academic theme -->
+<style>
+  :root{
+    --ink:#222; --muted:#555; --accent:#0b57d0; --border:#e6e6e6; --bg:#fff; --bg-soft:#fafafa;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e9e9ee; --muted:#cfcfe1; --accent:#89b4ff; --border:#2d2f36; --bg:#13151a; --bg-soft:#1a1d24;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;line-height:1.55}
+  header{
+    position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border);
+    z-index:10;backdrop-filter:saturate(1.1) blur(4px)
+  }
+  .container{max-width:980px;margin:auto;padding:0 16px}
+  .brand{display:flex;gap:12px;align-items:center;padding:12px 0}
+  .brand h1{font-size:18px;margin:0;color:var(--ink);font-weight:700}
+  nav{display:flex;flex-wrap:wrap;gap:10px 18px;padding:8px 0 14px}
+  nav a{color:var(--accent);text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px}
+  nav a:hover{border-color:var(--accent)}
+  main{padding:28px 0 60px}
+  section{padding:32px 0;border-bottom:1px solid var(--border)}
+  section:last-of-type{border-bottom:none}
+  .slide-title{font-size:28px;letter-spacing:.2px;margin:0 0 6px}
+  .subtitle{color:var(--muted);font-size:16px;margin:0 0 22px}
+  .grid{display:grid;grid-template-columns: 1.6fr .9fr; gap:22px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  ul{margin:0 0 14px 1.1rem}
+  li{margin:6px 0}
+  .explain{background:var(--bg-soft);border:1px solid var(--border);padding:12px 14px;border-radius:8px;margin-top:8px}
+  .script{font-style:italic;color:var(--muted);margin-top:8px}
+  figure{margin:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg-soft)}
+  figure img{display:block;width:100%;height:auto}
+  figcaption{font-size:12.5px;color:var(--muted);padding:8px 10px;border-top:1px solid var(--border)}
+  .footer{padding:36px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--border)}
+  .kicker{font-variant:small-caps;color:var(--muted);letter-spacing:.6px}
+  .pill{display:inline-block;background:var(--bg-soft);border:1px solid var(--border);padding:2px 8px;border-radius:999px;font-size:12px;color:var(--muted);margin-right:6px}
+  .note{font-size:14px;color:var(--muted)}
+</style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <div class="pill">LSC</div>
+        <h1>Reimagining University Administration — Best Practices of the Learning Support Center</h1>
+      </div>
+      <nav aria-label="Section navigation">
+        <a href="#slide1">Title & Hook</a>
+        <a href="#slide2">Problem</a>
+        <a href="#slide3">Aim & Outputs</a>
+        <a href="#slide4">Research Questions</a>
+        <a href="#slide5">Scope</a>
+        <a href="#slide6">Design & Standards</a>
+        <a href="#slide7">Methods</a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <section id="home" class="tron-section hero">
-      <h1>Tron: Ares Vibe</h1>
-      <p>Live neon grid feel with red running lines over glassy black.</p>
-      <p class="hint">Scroll down to test active link highlighting.</p>
+  <main class="container">
+    <!-- Slide 1 -->
+    <section id="slide1">
+      <div class="kicker">Slide 1</div>
+      <h2 class="slide-title">Reimagining University Administration: Learning Support Center (Phnom Penh)</h2>
+      <p class="subtitle">A descriptive single-case study from a private university in Phnom Penh, Cambodia</p>
+
+      <div class="grid">
+        <div>
+          <ul>
+            <li><strong>Reimagining University Administration</strong> — our proposal</li>
+            <li><strong>Best Practices in the Learning Support Center (LSC)</strong> — Phnom Penh, private university</li>
+            <li><strong>Descriptive single-case study</strong> — clear, reusable, scalable</li>
+          </ul>
+          <div class="explain">
+            We set out a practical model for how an LSC can run day-to-day and still meet quality benchmarks. The study
+            distills what works into a simple format other campuses can adopt.
+          </div>
+          <p class="script">“We’ll clearly show what works in the Learning Support Center and turn it into a reusable, scalable plan.”</p>
+        </div>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=1200&auto=format&fit=crop" alt="Tutoring support with a student and staff member" />
+          <figcaption>Photo: Unsplash (tutoring/learning support). <a href="https://unsplash.com/photos/woman-in-blue-shirt-sitting-beside-woman-in-black-shirt-9o8YdYGTT64" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
     </section>
 
-    <section id="projects" class="tron-section block glass">
-      <h2>Projects</h2>
-      <p>Show your work here.</p>
+    <!-- Slide 2 -->
+    <section id="slide2">
+      <div class="kicker">Slide 2</div>
+      <h2 class="slide-title">Problem & Why It Matters</h2>
+      <div class="grid">
+        <div>
+          <ul>
+            <li>Work is fragmented → slow handoffs and fixes</li>
+            <li>Exam-time risks rise without clear procedures</li>
+            <li>Students/lecturers get an <em>uneven</em> experience</li>
+          </ul>
+          <div class="explain">
+            When tasks live in separate inboxes and ad-hoc chats, bottlenecks appear—especially during exams. Students and lecturers
+            notice inconsistency across courses and terms.
+          </div>
+          <p class="script">“Work is fragmented—so fixes are slow, exam risks go up, and the experience is uneven.”</p>
+        </div>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1516534775068-ba3e7458af70?q=80&w=1200&auto=format&fit=crop" alt="Busy academic corridor and students" />
+          <figcaption>Photo: Unsplash (campus operations). <a href="https://unsplash.com/photos/photography-of-people-inside-room-VpOeXr5wmR4" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
     </section>
 
-    <section id="contact" class="tron-section block glass">
-      <h2>Contact</h2>
-      <p>Drop your info + links here.</p>
+    <!-- Slide 3 -->
+    <section id="slide3">
+      <div class="kicker">Slide 3</div>
+      <h2 class="slide-title">Aim & What You Get</h2>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><strong>Aim:</strong> describe LSC best practices in plain steps</li>
+            <li><strong>Best-Practice Playbook</strong> — simple how-to pages</li>
+            <li><strong>Process Maps + RACI</strong> — who does what</li>
+            <li><strong>KPI Dashboard</strong> — quick view each term</li>
+          </ul>
+          <div class="explain">
+            Deliverables help operations run the same way every time: a concise playbook, visual process maps with RACI roles,
+            and a small dashboard (e.g., access time, service quality, training, integrity).
+          </div>
+          <p class="script">“Describe best practices and deliver a Playbook, process maps with RACI, and a termly KPI dashboard.”</p>
+        </div>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?q=80&w=1200&auto=format&fit=crop" alt="Team reviewing process map and documents" />
+          <figcaption>Photo: Unsplash (process & documentation). <a href="https://unsplash.com/photos/person-writing-on-white-paper-7KLa-xLbSXA" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
     </section>
+
+    <!-- Slide 4 -->
+    <section id="slide4">
+      <div class="kicker">Slide 4</div>
+      <h2 class="slide-title">Research Questions</h2>
+      <div class="grid">
+        <div>
+          <ul>
+            <li>What works best in our LSC?</li>
+            <li>How it runs: people, process, technology, policy</li>
+            <li>How we know it works: access, time, quality, training, integrity</li>
+            <li>Do we meet standards? <strong>CAS / CRLA-ITTPC / AUN-QA</strong></li>
+          </ul>
+          <div class="explain">
+            We examine practices, operating model, and evidence of results. We also compare against established standards to
+            spot strengths and gaps.
+          </div>
+          <p class="script">“What works, how it runs, how we prove it works, and whether we meet CAS/CRLA-ITTPC/AUN-QA.”</p>
+        </div>
+        <figure>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Checklist-pen.jpg" alt="Checklist and quality assurance concept" />
+          <figcaption>Image: Wikimedia Commons (QA checklist). <a href="https://commons.wikimedia.org/wiki/File:Checklist-pen.jpg" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section id="slide5">
+      <div class="kicker">Slide 5</div>
+      <h2 class="slide-title">Scope & Boundaries</h2>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><strong>Included:</strong> timetables & retakes; course specs & QA; materials; classroom/online setup; Google Classroom invites; announcements; exam setup & invigilation; grading/results/score-review; teaching feedback; tutoring/advising with CSSA (incl. ACCA/CAT top-scorers)</li>
+            <li><strong>Not included:</strong> Registrar/Finance transactions (we map interfaces)</li>
+            <li><strong>Ethics:</strong> site anonymized as “University A”</li>
+          </ul>
+          <div class="explain">
+            We focus on services coordinated by the LSC and its handoffs with other units. Sensitive administrative transactions
+            are out-of-scope; we only define the touchpoints.
+          </div>
+          <p class="script">“We cover LSC work and its links to other units—not Registrar/Finance transactions. The site stays ‘University A.’”</p>
+        </div>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1587614382346-4ec70e388b28?q=80&w=1200&auto=format&fit=crop" alt="Invigilation and exam setup scene" />
+          <figcaption>Photo: Unsplash (exam/invigilation). <a href="https://unsplash.com/photos/man-sitting-on-chair-using-laptop-computer-xkBaqlcqeb4" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section id="slide6">
+      <div class="kicker">Slide 6</div>
+      <h2 class="slide-title">Design & Standards</h2>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><strong>Qualitative descriptive single-case</strong> (clarity, not cause–effect)</li>
+            <li>Compare to standards (descriptive): <strong>CAS • CRLA-ITTPC • AUN-QA</strong></li>
+            <li><strong>Purpose:</strong> find strengths & gaps — not score people</li>
+          </ul>
+          <div class="explain">
+            We document how the LSC operates in practice, and compare it descriptively with CAS, CRLA-ITTPC, and AUN-QA criteria.
+            The objective is improvement, not performance grading.
+          </div>
+          <p class="script">“Qualitative descriptive single-case, compared to CAS/CRLA-ITTPC/AUN-QA, to find strengths and gaps—no scoring.”</p>
+        </div>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?q=80&w=1200&auto=format&fit=crop" alt="Standards documents and guidelines on a desk" />
+          <figcaption>Photo: Unsplash (policies & standards). <a href="https://unsplash.com/photos/papers-on-brown-wooden-table-7VDoqI4P3n4" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section id="slide7">
+      <div class="kicker">Slide 7</div>
+      <h2 class="slide-title">Methods</h2>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><strong>Documents:</strong> policies, SOPs, logs</li>
+            <li><strong>Observations:</strong> tutoring, classroom/tech setup, invigilation</li>
+          </ul>
+          <div class="explain">
+            The case uses document review (policies, SOPs, operational logs) and structured observation of real activities
+            (tutoring, room/tech readiness, and exam operations).
+          </div>
+          <p class="script">“We review documents and observe tutoring, classroom/tech setup, and invigilation in practice.”</p>
+          <p class="note">Coming next (optional sections): Data & measures, Findings, Playbook samples, Process maps, RACI, KPI mini-dashboard, Recommendations.</p>
+        </div>
+        <figure>
+          <img src="https://images.unsplash.com/photo-1581375221564-2fe02eb47702?q=80&w=1200&auto=format&fit=crop" alt="Tutor assisting student with coursework" />
+          <figcaption>Photo: Unsplash (tutoring in action). <a href="https://unsplash.com/photos/person-holding-pencil-while-reading-book-uXnCqj6GpG0" target="_blank" rel="noopener">Source</a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <div class="footer">
+      <p>© <span id="year"></span> University A — Learning Support Center (LSC). Phnom Penh, Cambodia.</p>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <small>© <span id="currentYear"></span> You. All Rights Reserved.</small>
-  </footer>
-
-  <!-- Keep the script at the end so the canvas is definitely in the DOM -->
-  <script src="script.js" defer></script>
+<script>
+  // small niceties
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
