@@ -1,3 +1,4 @@
+// script.js
 // Slide deck navigation + resilient image galleries (3 sources) + active nav
 document.addEventListener('DOMContentLoaded', () => {
   // Year
@@ -73,56 +74,57 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------- Image galleries (3 sources per slide) --------
+  // Use robust Wikimedia PNG/SVG thumbs and neutral Unsplash analogues.
   const galleries = {
     title: [
-      { src:'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80', alt:'Tutoring support (Unsplash)', link:'https://unsplash.com/photos/9o8YdYGTT64' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Study_group_02.jpg/640px-Study_group_02.jpg', alt:'Study group (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Study_group_02.jpg' },
-      { src:'https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80', alt:'Students learning together (Unsplash)', link:'https://unsplash.com/photos/PQEOQHZnGBw' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Alpha_Centauri_AB_and_Proxima_Centauri_%28annotation%29.jpg/640px-Alpha_Centauri_AB_and_Proxima_Centauri_%28annotation%29.jpg', alt:'Alpha Centauri system context (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Alpha_Centauri_AB_and_Proxima_Centauri_(annotation).jpg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Polyphemus_%28moon_illustration%29.png/640px-Polyphemus_%28moon_illustration%29.png', alt:'Gas giant concept art analogue (Wikimedia)', link:'https://commons.wikimedia.org/wiki/Main_Page' },
+      { src:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1200&q=80', alt:'Alien skies—analogue mood (Unsplash)', link:'https://unsplash.com/photos/ln5drpv_ImI' },
     ],
     problem: [
-      { src:'https://images.unsplash.com/photo-1516534775068-ba3e7458af70?auto=format&fit=crop&w=1200&q=80', alt:'Busy academic corridor (Unsplash)', link:'https://unsplash.com/photos/VpOeXr5wmR4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Time_management_%28Unsplash%29.jpg/640px-Time_management_%28Unsplash%29.jpg', alt:'Time management (Wikimedia mirrored)', link:'https://commons.wikimedia.org/wiki/File:Time_management_(Unsplash).jpg' },
-      { src:'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=1200&q=80', alt:'Student under pressure (Unsplash)', link:'https://unsplash.com/photos/7JX0-bfiuxQ' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Hallelujah_Mountains%2C_Zhangjiajie%2C_Hunan.jpg/640px-Hallelujah_Mountains%2C_Zhangjiajie%2C_Hunan.jpg', alt:'Zhangjiajie pillars—floating mountains inspiration', link:'https://commons.wikimedia.org/wiki/File:Hallelujah_Mountains,_Zhangjiajie,_Hunan.jpg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Exoskeleton_breathing_mask_symbol.svg/640px-Exoskeleton_breathing_mask_symbol.svg.png', alt:'Breathing apparatus symbol (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Exoskeleton_breathing_mask_symbol.svg' },
+      { src:'https://images.unsplash.com/photo-1496302662116-85c3b55f09b4?auto=format&fit=crop&w=1200&q=80', alt:'Magnetic lab analogue (Unsplash)', link:'https://unsplash.com/photos/BCCtC9b2F8A' },
     ],
     aim: [
-      { src:'https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?auto=format&fit=crop&w=1200&q=80', alt:'Process documentation (Unsplash)', link:'https://unsplash.com/photos/7KLa-xLbSXA' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Sticky_notes_on_board.jpg/640px-Sticky_notes_on_board.jpg', alt:'Sticky notes planning (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Sticky_notes_on_board.jpg' },
-      { src:'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80', alt:'Team workshop (Unsplash)', link:'https://unsplash.com/photos/7omHUGhhmZ0' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Bioluminescence_in_Mushrooms.jpg/640px-Bioluminescence_in_Mushrooms.jpg', alt:'Bioluminescent fungi (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Bioluminescence_in_Mushrooms.jpg' },
+      { src:'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1200&q=80', alt:'Waterfalls & canopies (Unsplash)', link:'https://unsplash.com/photos/JmuyB_LibRo' },
+      { src:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80', alt:'Misty highlands (Unsplash)', link:'https://unsplash.com/photos/2LowviVHZ-E' },
     ],
     rq: [
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Checklist_icon.svg/640px-Checklist_icon.svg.png', alt:'Quality assurance checklist (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Checklist_icon.svg' },
-      { src:'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=1200&q=80', alt:'Team reviewing checklist (Unsplash)', link:'https://unsplash.com/photos/7QU7I5KZoM4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/ISO_9001_certified.svg/640px-ISO_9001_certified.svg.png', alt:'Standards badge (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:ISO_9001_certified.svg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tree_roots_in_the_forest.jpg/640px-Tree_roots_in_the_forest.jpg', alt:'Interconnected roots network (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Tree_roots_in_the_forest.jpg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Seed_on_moss.jpg/640px-Seed_on_moss.jpg', alt:'Seed symbolizing balance (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Seed_on_moss.jpg' },
+      { src:'https://images.unsplash.com/photo-1533577116850-9cc66cad8a9b?auto=format&fit=crop&w=1200&q=80', alt:'Sacred grove analogue (Unsplash)', link:'https://unsplash.com/photos/0nJ6eJtC6t4' },
     ],
     scope: [
-      { src:'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?auto=format&fit=crop&w=1200&q=80', alt:'Exam & invigilation (Unsplash)', link:'https://unsplash.com/photos/xkBaqlcqeb4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Exam_time.jpg/640px-Exam_time.jpg', alt:'Exam time (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Exam_time.jpg' },
-      { src:'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80', alt:'Online class setup (Unsplash)', link:'https://unsplash.com/photos/-uHVRvDr7pg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Horse_and_rider_silhouette.jpg/640px-Horse_and_rider_silhouette.jpg', alt:'Rider & mount bond (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Horse_and_rider_silhouette.jpg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Eagle_in_flight.jpg/640px-Eagle_in_flight.jpg', alt:'Aerial mobility analogue (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Eagle_in_flight.jpg' },
+      { src:'https://images.unsplash.com/photo-1476067897447-d0c5df27b5df?auto=format&fit=crop&w=1200&q=80', alt:'Predator presence analogue (Unsplash)', link:'https://unsplash.com/photos/4W5bQ4Q6Q1g' },
     ],
     design: [
-      { src:'https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?auto=format&fit=crop&w=1200&q=80', alt:'Policies & standards (Unsplash)', link:'https://unsplash.com/photos/7VDoqI4P3n4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Document_icon_%28the_Noun_Project_15515%29.svg/640px-Document_icon_%28the_Noun_Project_15515%29.svg.png', alt:'Document icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Document_icon_(the_Noun_Project_15515).svg' },
-      { src:'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80', alt:'Standards review (Unsplash)', link:'https://unsplash.com/photos/cO2eCuEtnYI' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Indigenous_people_in_ceremony.jpg/640px-Indigenous_people_in_ceremony.jpg', alt:'Community & ceremony (Wikimedia)', link:'https://commons.wikimedia.org/wiki/Main_Page' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Bow_and_arrow_icon.svg/640px-Bow_and_arrow_icon.svg.png', alt:'Hunter-gatherer skills icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Bow_and_arrow_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=1200&q=80', alt:'Forest agility analogue (Unsplash)', link:'https://unsplash.com/photos/2LowviVHZ-E' },
     ],
     methods: [
-      { src:'https://images.unsplash.com/photo-1581375221564-2fe02eb47702?auto=format&fit=crop&w=1200&q=80', alt:'Tutoring session (Unsplash)', link:'https://unsplash.com/photos/uXnCqj6GpG0' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Interview_icon.png/640px-Interview_icon.png', alt:'Interview icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Interview_icon.png' },
-      { src:'https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=1200&q=80', alt:'Focus group discussion (Unsplash)', link:'https://unsplash.com/photos/u0vgcIOQG08' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Choir_singing.jpg/640px-Choir_singing.jpg', alt:'Song & ritual (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Choir_singing.jpg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Dance_icon.svg/640px-Dance_icon.svg.png', alt:'Rite of passage icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Dance_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1520975693413-c59b3e538c79?auto=format&fit=crop&w=1200&q=80', alt:'Sacred site analogue (Unsplash)', link:'https://unsplash.com/photos/8manzosRGPE' },
     ],
     kpi: [
-      { src:'https://images.unsplash.com/photo-1551281044-8b39f77b0d5c?auto=format&fit=crop&w=1200&q=80', alt:'KPI dashboard (Unsplash)', link:'https://unsplash.com/photos/3Mhgvrk4tjM' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png', alt:'Graph icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Graph_icon.svg' },
-      { src:'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80', alt:'Charts on laptop (Unsplash)', link:'https://unsplash.com/photos/mR1CIDduGLc' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Open_pit_mine.jpg/640px-Open_pit_mine.jpg', alt:'Open-pit mining (Wikimedia)', link:'https://commons.wikimedia.org/wiki/Main_Page' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Stop_hand_sign_icon.svg/640px-Stop_hand_sign_icon.svg.png', alt:'Conflict/stop icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Stop_hand_sign_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80', alt:'Forest at risk analogue (Unsplash)', link:'https://unsplash.com/photos/Nl7eLS8E2Ss' },
     ],
     plan: [
-      { src:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80', alt:'Team planning (Unsplash)', link:'https://unsplash.com/photos/3fPXt37X6UQ' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Calendar_icon_2.svg/640px-Calendar_icon_2.svg.png', alt:'Calendar icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Calendar_icon_2.svg' },
-      { src:'https://images.unsplash.com/photo-1542744173-05336fcc7ad4?auto=format&fit=crop&w=1200&q=80', alt:'Project planning (Unsplash)', link:'https://unsplash.com/photos/cvBBO4PzWPg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Hands_forming_heart_shape.jpg/640px-Hands_forming_heart_shape.jpg', alt:'Connection & care (Wikimedia)', link:'https://commons.wikimedia.org/wiki/Main_Page' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Scales_of_Justice.svg/640px-Scales_of_Justice.svg.png', alt:'Ethics and balance (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Scales_of_Justice.svg' },
+      { src:'https://images.unsplash.com/photo-1499744632587-7f0a15f5b2c4?auto=format&fit=crop&w=1200&q=80', alt:'Belonging and home analogue (Unsplash)', link:'https://unsplash.com/photos/jbtfM0XBeRc' },
     ],
     ask: [
-      { src:'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80', alt:'Decision & approval (Unsplash)', link:'https://unsplash.com/photos/UcfKYTan-LU' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Handshake_icon.svg/640px-Handshake_icon.svg.png', alt:'Handshake icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Handshake_icon.svg' },
-      { src:'https://images.unsplash.com/photo-1551836022-4c4fae74f77b?auto=format&fit=crop&w=1200&q=80', alt:'Agreement in meeting (Unsplash)', link:'https://unsplash.com/photos/1K9T5YiZ2WU' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Blue_planet_Earth.jpg/640px-Blue_planet_Earth.jpg', alt:'Blue planet—environmental storytelling (Wikimedia)', link:'https://commons.wikimedia.org/wiki/Main_Page' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Handshake_icon.svg/640px-Handshake_icon.svg.png', alt:'Handshake—agreement (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Handshake_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80', alt:'Inspiration and resonance (Unsplash)', link:'https://unsplash.com/photos/kcW4X5zL6Bk' },
     ],
   };
 
@@ -150,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
       img.setAttribute('referrerpolicy', 'no-referrer');
       img.onerror = function () {
         this.onerror = null;
-        this.src = `https://placehold.co/800x500?text=${encodeURIComponent(item.alt || 'LSC Image')}`;
+        this.src = `https://placehold.co/800x500?text=${encodeURIComponent(item.alt || 'Image')}`;
       };
       img.src = item.src;
       img.alt = item.alt || '';
