@@ -3,8 +3,9 @@
 html, body {
   height: 100%;
   margin: 0;
-  color: #e9e9ef;
-  background: #07070c; /* fallback if JS disabled */
+  color: #ececf3;
+  /* Let the canvas show through more: */
+  background: transparent;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
 }
 
@@ -15,7 +16,8 @@ html, body {
   z-index: -1;
   pointer-events: none;
   display: block;
-  background: #07070c; /* fallback */
+  /* Fallback color if JS is disabled */
+  background: #0b0b12;
 }
 
 /* Header / Nav */
@@ -24,8 +26,9 @@ html, body {
   top: 0;
   z-index: 10;
   backdrop-filter: blur(8px);
-  background: rgba(7, 7, 12, 0.35);
-  border-bottom: 1px solid rgba(255, 0, 85, 0.15);
+  /* More transparent so the lines show through */
+  background: rgba(10, 10, 16, 0.22);
+  border-bottom: 1px solid rgba(255, 0, 85, 0.12);
 }
 .site-nav {
   display: flex;
@@ -33,16 +36,21 @@ html, body {
   padding: 0.75rem 1rem;
 }
 .nav-link {
-  color: #cfcfe6;
+  color: #d8d8ea;
   text-decoration: none;
-  transition: color .2s ease, text-shadow .2s ease;
+  transition: color .2s ease, text-shadow .2s ease, box-shadow .2s ease;
+  padding: .25rem .5rem;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 0 rgba(255,0,85,.15);
 }
 .nav-link:hover {
   color: #ffffff;
+  box-shadow: inset 0 0 0 2px rgba(255,0,85,.15);
 }
 .nav-link.active {
-  color: #ff2355;
-  text-shadow: 0 0 8px rgba(255,0,85,0.8), 0 0 18px rgba(255,0,85,0.4);
+  color: #ff2d61;
+  text-shadow: 0 0 10px rgba(255,0,85,0.9), 0 0 22px rgba(255,0,85,0.45);
+  box-shadow: inset 0 0 0 2px rgba(255,0,85,.35);
 }
 
 /* Sections */
@@ -58,24 +66,30 @@ main { position: relative; }
   font-size: clamp(2rem, 4vw, 3.25rem);
   margin: 0 0 .5rem;
   letter-spacing: .03em;
-  text-shadow: 0 0 20px rgba(255,0,85,.25);
+  text-shadow: 0 0 20px rgba(255,0,85,.28);
 }
-.hint { opacity: 0.8; }
+.hint { opacity: 0.9; }
 
+/* Make section background more see-through so lines show */
 .block {
   padding: 6rem 1rem;
   max-width: 900px;
   margin-inline: auto;
-  background: linear-gradient(to bottom, rgba(7,7,12,0.0), rgba(7,7,12,0.25) 40%, rgba(7,7,12,0.0));
-  border-top: 1px solid rgba(255,0,85,0.1);
-  border-bottom: 1px solid rgba(255,0,85,0.1);
+  background: linear-gradient(
+    to bottom,
+    rgba(10,10,16,0.00),
+    rgba(10,10,16,0.10) 40%,
+    rgba(10,10,16,0.00)
+  );
+  border-top: 1px solid rgba(255,0,85,0.08);
+  border-bottom: 1px solid rgba(255,0,85,0.08);
 }
 
 /* Footer */
 .site-footer {
   padding: 3rem 1rem 5rem;
   text-align: center;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 /* Smooth scrolling */
