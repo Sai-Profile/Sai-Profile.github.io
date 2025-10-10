@@ -113,14 +113,7 @@ figcaption{
   border-top:1px solid var(--border);
 }
 
-/* Helpful utilities */
-.visually-hidden{
-  position:absolute!important;
-  height:1px;width:1px;
-  overflow:hidden;clip:rect(1px,1px,1px,1px);
-}
-
-/* Print: one section per page, simple margins */
+/* Print: one section per page */
 @media print {
   header, nav, .footer { display:none !important; }
   body { background:#fff; color:#000; }
