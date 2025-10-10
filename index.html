@@ -3,20 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Updatable Website</title>
-    <link rel="stylesheet" href="style.css"> 
+    <title>Sai-Profile // Digital Identity</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Project!</h1>
-    </header>
-    <main>
-        <p id="main-text">This content is from the HTML file. It will be styled by CSS and changed by JavaScript.</p>
-        <button id="updateButton">Click Me to Run JS</button>
-    </main>
-    <footer>
-        <p>&copy; 2025 - All rights reserved.</p>
-    </footer>
+    <canvas id="tronGrid"></canvas> <div class="container">
+        <header class="tron-header">
+            <h1 class="tron-glow">SAI-PROFILE <span class="subtext">// DIGITAL SELF</span></h1>
+            <nav>
+                <a href="#about" class="nav-link tron-glow">ABOUT</a>
+                <a href="#projects" class="nav-link tron-glow">PROJECTS</a>
+                <a href="#contact" class="nav-link tron-glow">CONTACT</a>
+            </nav>
+        </header>
+
+        <main class="tron-main">
+            <section id="about" class="tron-section">
+                <h2 class="section-title tron-glow">_ABOUT ME</h2>
+                <div class="content-box tron-border">
+                    <p>
+                        Welcome, User. This is my construct within the system. I am a program designed with the core directive to innovate and connect the circuits of ideas. Like Ares, I strive to make an impact, transforming the digital landscape one line of code at a time.
+                    </p>
+                    <p>
+                        My journey within the Grid is driven by curiosity and a passion for creative problem-solving. Explore my data streams below.
+                    </p>
+                </div>
+            </section>
+
+            <section id="projects" class="tron-section">
+                <h2 class="section-title tron-glow">_PROJECTS</h2>
+                <div class="content-box tron-border">
+                    <div class="project-item">
+                        <h3 class="tron-glow">Project 1: Grid Weaver</h3>
+                        <p>A web application focused on interactive data visualization, building complex interfaces with elegant simplicity.</p>
+                        <a href="#" class="tron-button tron-glow">VIEW PROJECT</a>
+                    </div>
+                    <div class="project-item">
+                        <h3 class="tron-glow">Project 2: Cypher Protocol</h3>
+                        <p>Exploring secure communication methods in a decentralized network, ensuring data integrity within the system.</p>
+                        <a href="#" class="tron-button tron-glow">VIEW PROJECT</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="tron-section">
+                <h2 class="section-title tron-glow">_CONTACT // REZ</h2>
+                <div class="content-box tron-border">
+                    <p>If you wish to communicate within this sector, please transmit a message.</p>
+                    <a href="mailto:your.email@example.com" class="tron-button tron-glow">TRANSMIT MESSAGE</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="tron-footer tron-glow">
+            <p>// END OF LINE // <span id="currentYear"></span></p>
+        </footer>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
