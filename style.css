@@ -1,178 +1,130 @@
-/* Base */
-* { box-sizing: border-box; }
-html, body {
-  height: 100%;
-  margin: 0;
-  color: #ececf3;
-  background: #0c0d14; /* fallback if JS fails */
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+/* ===== Classic research presentation theme ===== */
+:root{
+  --ink:#222;
+  --muted:#555;
+  --accent:#0b57d0;
+  --border:#e6e6e6;
+  --bg:#fff;
+  --bg-soft:#fafafa;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#e9e9ee;
+    --muted:#cfcfe1;
+    --accent:#89b4ff;
+    --border:#2d2f36;
+    --bg:#13151a;
+    --bg-soft:#1a1d24;
+  }
 }
 
-/* Canvas behind everything */
-#tronGrid {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  display: block;
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  line-height:1.55;
+  text-rendering:optimizeLegibility;
 }
 
-/* Header / Nav */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-  background: rgba(5, 6, 10, 0.18); /* glassy */
-  border-bottom: 1px solid rgba(255,0,85,0.18);
+/* Header & nav */
+header{
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  z-index:10;
+  backdrop-filter:saturate(1.06) blur(4px);
 }
-.site-nav {
-  display: flex;
-  gap: 1rem;
-  padding: .75rem 1rem;
-}
-.nav-link {
-  color: #dcdcf1;
-  text-decoration: none;
-  padding: .25rem .5rem;
-  border-radius: 6px;
-  transition: color .2s ease, box-shadow .2s ease, text-shadow .2s ease;
-}
-.nav-link:hover { color: #fff; }
-.nav-link.active {
-  color: #ff2d61;
-  text-shadow: 0 0 10px rgba(255,0,85,.85), 0 0 22px rgba(255,0,85,.35);
-  box-shadow: inset 0 0 0 2px rgba(255,0,85,.35);
+.container{max-width:980px;margin:auto;padding:0 16px}
+.brand{display:flex;gap:12px;align-items:center;padding:12px 0}
+.brand h1{font-size:18px;margin:0;color:var(--ink);font-weight:700}
+.pill{
+  display:inline-block;
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:12px;
+  color:var(--muted);
+  margin-right:6px;
 }
 
-/* Sections */
-main { position: relative; }
-.hero {
-  min-height: 70vh;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 7rem 1rem 4rem;
+nav{display:flex;flex-wrap:wrap;gap:10px 18px;padding:8px 0 14px}
+nav a{
+  color:var(--accent);
+  text-decoration:none;
+  border-bottom:2px solid transparent;
+  padding-bottom:2px;
 }
-.hero h1 {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  margin: 0 0 .5rem;
-  letter-spacing: .03em;
-  text-shadow: 0 0 20px rgba(255,0,85,.28);
+nav a:hover{border-color:var(--accent)}
+nav a.active{
+  border-color:var(--accent);
+  font-weight:600;
 }
-.hint { opacity: .9; }
 
-/* Glassy blocks so the red lines show through */
-.block {
-  padding: 6rem 1rem;
-  max-width: 900px;
-  margin-inline: auto;
+/* Main layout */
+main{padding:28px 0 60px}
+section{padding:32px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+
+.kicker{font-variant:small-caps;color:var(--muted);letter-spacing:.6px}
+.slide-title{font-size:28px;letter-spacing:.2px;margin:0 0 6px}
+.subtitle{color:var(--muted);font-size:16px;margin:0 0 22px}
+
+.grid{display:grid;grid-template-columns: 1.6fr .9fr; gap:22px}
+@media (max-width:880px){.grid{grid-template-columns:1fr}}
+
+ul{margin:0 0 14px 1.1rem}
+li{margin:6px 0}
+
+.explain{
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  padding:12px 14px;
+  border-radius:8px;
+  margin-top:8px;
 }
-.glass {
-  background: rgba(10, 11, 17, 0.20);       /* translucent black */
-  border: 1px solid rgba(255,0,85,0.10);
-  border-radius: 12px;
-  backdrop-filter: blur(6px);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.35),
-    inset 0 0 0 1px rgba(255,0,85,.05);
+.script{font-style:italic;color:var(--muted);margin-top:8px}
+.note{font-size:14px;color:var(--muted)}
+
+figure{
+  margin:0;
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  background:var(--bg-soft);
+}
+figure img{display:block;width:100%;height:auto}
+figcaption{
+  font-size:12.5px;
+  color:var(--muted);
+  padding:8px 10px;
+  border-top:1px solid var(--border);
 }
 
 /* Footer */
-.site-footer {
-  padding: 3rem 1rem 5rem;
-  text-align: center;
-  opacity: .9;
+.footer{
+  padding:36px 0;
+  color:var(--muted);
+  font-size:14px;
+  border-top:1px solid var(--border);
 }
 
-/* Smooth scrolling */
-html { scroll-behavior: smooth; }
-/* ===========================
-   TRON: Ares visual tokens
-   (safe to paste at end)
-   =========================== */
-:root {
-  --ares-bg-top:    #2a0a1a; /* wine-violet */
-  --ares-bg-mid:    #1e0812; /* inner crimson */
-  --ares-bg-bottom: #0c0509; /* near-black maroon */
-  --ares-red:       #ff0055;
-  --ares-core:      #ffd0e0;  /* hot pink-white core */
-  --ares-glow:      rgba(255, 0, 85, 1);
-  --glass-line:     rgba(255, 0, 85, 0.18);
-  --glass-fill:     rgba(5, 6, 10, 0.14);   /* header glass */
-  --glass-card:     rgba(10, 11, 17, 0.16); /* section “card” glass */
-  --text:           #ececf3;
+/* Helpful utilities */
+.visually-hidden{
+  position:absolute!important;
+  height:1px;width:1px;
+  overflow:hidden;clip:rect(1px,1px,1px,1px);
 }
 
-/* Let the canvas paint the background; keep a dark fallback */
-html, body {
-  background: #0c0d14; /* fallback if JS is off */
-  color: var(--text);
-}
-
-/* Canvas sits behind everything (required for the JS background) */
-#tronGrid {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  display: block;
-  /* transparent is fine; JS draws the red room.
-     If you want a fallback color instead, uncomment:
-     background: var(--ares-bg-bottom);
-  */
-}
-
-/* Header: glassy + subtle neon border */
-.site-header {
-  /* keep your existing sticky/blur if present */
-  background: var(--glass-fill);
-  border-bottom: 1px solid var(--glass-line);
-  backdrop-filter: blur(10px);
-}
-
-/* Nav active state in Ares red */
-.nav-link.active {
-  color: var(--ares-red);
-  text-shadow:
-    0 0 10px rgba(255,0,85,.85),
-    0 0 22px rgba(255,0,85,.35);
-  box-shadow: inset 0 0 0 2px rgba(255,0,85,.35);
-  border-radius: 6px;
-}
-
-/* Optional: on hover, a light inner border—keeps the neon feel */
-.nav-link:hover {
-  color: #ffffff;
-  box-shadow: inset 0 0 0 2px rgba(255,0,85,.15);
-  border-radius: 6px;
-}
-
-/* “Glassy” content blocks so the rails & lines show through */
-.glass {
-  background: var(--glass-card);
-  border: 1px solid rgba(255,0,85,0.10);
-  border-radius: 12px;
-  backdrop-filter: blur(6px);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.35),
-    inset 0 0 0 1px rgba(255,0,85,.05);
-}
-
-/* If you already have .block, this lightly reveals the background */
-.block {
-  /* keep your existing spacing; only add transparency if you want */
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 11, 17, 0.00),
-    rgba(10, 11, 17, 0.12) 40%,
-    rgba(10, 11, 17, 0.00)
-  );
-  border-top: 1px solid rgba(255,0,85,0.08);
-  border-bottom: 1px solid rgba(255,0,85,0.08);
-}
-
-/* Hero title glow (subtle, matches Ares palette) */
-.hero h1 {
-  text-shadow: 0 0 20px rgba(255,0,85,.28);
+/* Print: one section per page, simple margins */
+@media print {
+  header, nav, .footer { display:none !important; }
+  body { background:#fff; color:#000; }
+  section { page-break-after: always; border:none; padding:16px 0; }
+  section:last-of-type { page-break-after: auto; }
+  a[href^="http"]::after { content:" (" attr(href) ")"; font-size:0.85em; }
 }
