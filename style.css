@@ -1,35 +1,263 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
+/* Basic Reset & Tron Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Aldrich&display=swap'); /* A futuristic, Tron-like font */
+
+:root {
+    --tron-blue: #00e0ff; /* Original blue (can be removed or kept as secondary) */
+    --tron-red: #ff0055;  /* The new primary accent color */
+    --background-dark: #0a0a0f; /* Very dark background */
+    --text-light: #e0e0e0;
+    --border-glow: #ff0055; /* CHANGED TO RED */
+}
+
+* {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Aldrich', sans-serif;
+    background-color: var(--background-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Canvas for animated grid */
+#tronGrid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Send it to the background */
+    opacity: 0.3; /* Subtle grid */
+}
+
+/* Main Container for content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
+    position: relative; /* To layer content above canvas */
+    z-index: 1;
+    flex-grow: 1; /* Allow content to push footer down */
+}
+
+/* Tron Header Styles */
+.tron-header {
+    text-align: center;
+    padding: 40px 0 20px;
+    border-bottom: 2px solid rgba(var(--tron-red), 0.3); /* CHANGED TO RED */
+    margin-bottom: 40px;
+}
+
+.tron-header h1 {
+    font-size: 3.5em;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px var(--tron-red); /* CHANGED TO RED */
+}
+
+.tron-header .subtext {
+    font-size: 0.5em;
+    display: block;
+    opacity: 0.7;
+    margin-top: -10px;
+}
+
+/* Navigation Styles */
+nav {
+    margin-top: 20px;
+}
+
+nav a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1.1em;
+    margin: 0 15px;
+    padding: 8px 0;
+    transition: color 0.3s, text-shadow 0.3s;
+    position: relative;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--tron-red); /* CHANGED TO RED */
+    box-shadow: 0 0 8px var(--tron-red); /* CHANGED TO RED */
+    transition: width 0.3s;
+}
+
+nav a:hover::after,
+nav a.active::after {
+    width: 100%;
+}
+
+nav a:hover,
+nav a.active {
+    color: var(--tron-red); /* CHANGED TO RED */
+    text-shadow: 0 0 10px var(--tron-red); /* CHANGED TO RED */
+}
+
+/* Main Content Area */
+.tron-main {
+    padding: 20px 0;
+}
+
+.tron-section {
+    margin-bottom: 60px;
     text-align: center;
 }
-h1 {
-    color: #007bff;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
+
+.section-title {
+    font-size: 2.5em;
+    color: var(--text-light);
+    margin-bottom: 30px;
+    position: relative;
     display: inline-block;
+    padding-bottom: 10px;
 }
-#main-text {
-    font-size: 1.1em;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 80px;
+    height: 2px;
+    background-color: var(--tron-blue); /* Kept blue as secondary accent */
+    box-shadow: 0 0 8px var(--tron-blue); /* Kept blue as secondary accent */
 }
-#updateButton {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
+
+/* Content Boxes */
+.content-box {
+    background-color: rgba(1, 1, 1, 0.4);
+    padding: 30px;
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-top: 15px;
-    transition: background-color 0.3s;
+    text-align: left;
+    margin: 0 auto;
+    max-width: 800px;
+    position: relative;
+    border: 1px solid rgba(var(--border-glow), 0.3);
+    box-shadow: 0 0 15px rgba(var(--border-glow), 0.2);
+    transition: all 0.3s ease-in-out;
 }
-#updateButton:hover {
-    background-color: #218838;
+
+.content-box:hover {
+    border-color: var(--border-glow);
+    box-shadow: 0 0 25px rgba(var(--border-glow), 0.5);
+    transform: translateY(-5px);
+}
+
+.content-box p {
+    margin-bottom: 15px;
+    font-size: 1.05em;
+    color: #c0c0d0;
+}
+
+/* Project Items */
+.project-item {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed rgba(var(--tron-red), 0.3); /* Already red */
+}
+
+.project-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.project-item h3 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: var(--text-light);
+}
+
+/* Tron Button Styles */
+.tron-button {
+    display: inline-block;
+    background-color: rgba(var(--tron-red), 0.1); /* CHANGED TO RED */
+    color: var(--tron-red); /* CHANGED TO RED */
+    text-decoration: none;
+    padding: 10px 25px;
+    border: 1px solid var(--tron-red); /* CHANGED TO RED */
+    border-radius: 3px;
+    font-size: 1em;
+    letter-spacing: 1px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 8px rgba(var(--tron-red), 0.5); /* CHANGED TO RED */
+}
+
+.tron-button:hover {
+    background-color: var(--tron-red); /* CHANGED TO RED */
+    color: var(--background-dark);
+    text-shadow: none;
+    box-shadow: 0 0 20px var(--tron-red); /* CHANGED TO RED */
+    transform: translateY(-2px);
+}
+
+/* Tron Glow Effect Class */
+.tron-glow {
+    text-shadow: 0 0 5px rgba(var(--tron-red), 0.7), /* CHANGED TO RED */
+                 0 0 10px rgba(var(--tron-red), 0.5), /* CHANGED TO RED */
+                 0 0 15px rgba(var(--tron-red), 0.3); /* CHANGED TO RED */
+}
+
+/* Footer Styles */
+.tron-footer {
+    text-align: center;
+    padding: 30px;
+    margin-top: 50px;
+    border-top: 1px solid rgba(var(--tron-red), 0.3); /* CHANGED TO RED */
+    font-size: 0.9em;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tron-header h1 {
+        font-size: 2.5em;
+    }
+    nav a {
+        margin: 0 10px;
+        font-size: 0.9em;
+    }
+    .section-title {
+        font-size: 2em;
+    }
+    .content-box {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tron-header h1 {
+        font-size: 1.8em;
+    }
+    nav a {
+        display: block;
+        margin: 10px 0;
+    }
+    .section-title {
+        font-size: 1.5em;
+    }
+    .tron-button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
 }
