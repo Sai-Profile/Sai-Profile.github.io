@@ -1,66 +1,417 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sai-Profile // Digital Identity</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-</head>
-<body>
-    <canvas id="tronGrid"></canvas> <div class="container">
-        <header class="tron-header">
-            <h1 class="tron-glow">SAI-PROFILE <span class="subtext">// DIGITAL SELF</span></h1>
-            <nav>
-                <a href="#about" class="nav-link tron-glow">ABOUT</a>
-                <a href="#projects" class="nav-link tron-glow">PROJECTS</a>
-                <a href="#contact" class="nav-link tron-glow">CONTACT</a>
-            </nav>
-        </header>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ===============================
+  // Tron: Ares Live Background
+  // ===============================
+  const canvas = document.getElementById('tronGrid');
+  const ctx = canvas.getContext('2d', { alpha: true });
 
-        <main class="tron-main">
-            <section id="about" class="tron-section">
-                <h2 class="section-title tron-glow">_ABOUT ME</h2>
-                <div class="content-box tron-border">
-                    <p>
-                        Welcome, User. This is my construct within the system. I am a program designed with the core directive to innovate and connect the circuits of ideas. Like Ares, I strive to make an impact, transforming the digital landscape one line of code at a time.
-                    </p>
-                    <p>
-                        My journey within the Grid is driven by curiosity and a passion for creative problem-solving. Explore my data streams below.
-                    </p>
-                </div>
-            </section>
+  // -------------------------------
+  // Tunables (Ares red palette)
+  // -------------------------------
+  const THEME = {
+    bgTop: '#050508',
+    bgBottom: '#0a0a11',
+    tronRed: (a=1) => `rgba(255, 0, 85, ${a})`,
+    tronCore: (a=1) => `rgba(255, 60, 120, ${a})`,
+    glowShadowColor: 'rgba(255, 0, 85, 0.9)',
+    vignette: 'rgba(0,0,0,0.55)',
+    scanlineAlpha: 0.06,
+  };
 
-            <section id="projects" class="tron-section">
-                <h2 class="section-title tron-glow">_PROJECTS</h2>
-                <div class="content-box tron-border">
-                    <div class="project-item">
-                        <h3 class="tron-glow">Project 1: Grid Weaver</h3>
-                        <p>A web application focused on interactive data visualization, building complex interfaces with elegant simplicity.</p>
-                        <a href="#" class="tron-button tron-glow">VIEW PROJECT</a>
-                    </div>
-                    <div class="project-item">
-                        <h3 class="tron-glow">Project 2: Cypher Protocol</h3>
-                        <p>Exploring secure communication methods in a decentralized network, ensuring data integrity within the system.</p>
-                        <a href="#" class="tron-button tron-glow">VIEW PROJECT</a>
-                    </div>
-                </div>
-            </section>
+  const GRID = {
+    horizon: 0.42,       // 0-1 from top of canvas
+    depthSpeed: 0.015,   // grid sliding speed
+    vLines: 20,          // vertical lines count
+    hLines: 30,          // horizontal lines count (computed per frame with spacing)
+    glow: 14,            // px
+    lineWidth: 1.25,
+  };
 
-            <section id="contact" class="tron-section">
-                <h2 class="section-title tron-glow">_CONTACT // REZ</h2>
-                <div class="content-box tron-border">
-                    <p>If you wish to communicate within this sector, please transmit a message.</p>
-                    <a href="mailto:your.email@example.com" class="tron-button tron-glow">TRANSMIT MESSAGE</a>
-                </div>
-            </section>
-        </main>
+  const TRAILS = {
+    count: 70,
+    speed: [0.6, 1.8],
+    size: [0.8, 2.2],
+    life: [2.5, 6.0], // seconds
+  };
 
-        <footer class="tron-footer tron-glow">
-            <p>// END OF LINE // <span id="currentYear"></span></p>
-        </footer>
-    </div>
+  const SPEEDLINES = {
+    max: 120,
+    spawnChance: 0.25,
+    width: [1, 2],
+    speed: [1.2, 2.4],
+    glow: 10,
+  };
 
-    <script src="script.js"></script>
-</body>
-</html>
+  // Motion preferences
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // -------------------------------
+  // Canvas sizing w/ DPR
+  // -------------------------------
+  let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  function resizeCanvas() {
+    const { innerWidth: w, innerHeight: h } = window;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+    // Rebuild cached textures that depend on size
+    buildScanlinePattern();
+    buildVignette();
+    rebuildGridGeometry();
+  }
+  window.addEventListener('resize', () => {
+    dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    resizeCanvas();
+  });
+  resizeCanvas();
+
+  // -------------------------------
+  // Cursor → parallax target
+  // -------------------------------
+  let pointer = { x: window.innerWidth/2, y: window.innerHeight*GRID.horizon };
+  let parallax = { x: pointer.x, y: pointer.y };
+  const lerp = (a,b,t) => a + (b - a) * t;
+
+  function onPointerMove(e) {
+    const x = ('touches' in e) ? e.touches[0].clientX : e.clientX;
+    const y = ('touches' in e) ? e.touches[0].clientY : e.clientY;
+    pointer.x = x;
+    pointer.y = y;
+  }
+  window.addEventListener('mousemove', onPointerMove, { passive: true });
+  window.addEventListener('touchmove', onPointerMove, { passive: true });
+
+  // -------------------------------
+  // Background gradient & scanlines
+  // -------------------------------
+  function drawBackground() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, THEME.bgTop);
+    g.addColorStop(1, THEME.bgBottom);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // Subtle noise-like scanlines
+    if (scanlinePattern) {
+      ctx.globalAlpha = THEME.scanlineAlpha;
+      ctx.fillStyle = ctx.createPattern(scanlinePattern, 'repeat');
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  let scanlinePattern = null;
+  function buildScanlinePattern() {
+    const p = document.createElement('canvas');
+    const ph = 3; // every 3 px
+    p.width = 2;
+    p.height = ph;
+    const pctx = p.getContext('2d');
+    pctx.fillStyle = 'rgba(255,255,255,0.08)';
+    pctx.fillRect(0, 1, 2, 1);
+    scanlinePattern = p;
+  }
+
+  // -------------------------------
+  // Vignette cache
+  // -------------------------------
+  let vignetteCanvas = null;
+  function buildVignette() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const v = document.createElement('canvas');
+    v.width = Math.max(1, w);
+    v.height = Math.max(1, h);
+    const vctx = v.getContext('2d');
+    const rad = Math.hypot(w, h) * 0.75;
+    const g = vctx.createRadialGradient(w/2, h/2, rad*0.35, w/2, h/2, rad);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(1, THEME.vignette);
+    vctx.fillStyle = g;
+    vctx.fillRect(0, 0, w, h);
+    vignetteCanvas = v;
+  }
+
+  // -------------------------------
+  // Perspective grid geometry
+  // -------------------------------
+  let gridPaths = { v: [], h: [] };
+
+  function rebuildGridGeometry() {
+    gridPaths.v.length = 0;
+    gridPaths.h.length = 0;
+    // vertical lines are spaced in screen X but converge at vanishing point (parallax)
+    for (let i = 0; i <= GRID.vLines; i++) {
+      gridPaths.v.push(new Path2D());
+    }
+    // horizontal lines are spaced in world Z; computed each frame (depth slide)
+  }
+
+  function projectToScreen(x, z, vpX, vpY, w, h) {
+    // simple perspective: y grows with z; horizon at vpY
+    const persp = 0.0028; // perspective factor
+    const scale = 1 / (1 + z * persp);
+    const sx = lerp(vpX, x, scale);
+    const sy = lerp(vpY, h, scale); // drops toward bottom as z increases
+    return { x: sx, y: sy };
+  }
+
+  // -------------------------------
+  // Particles (light trails)
+  // -------------------------------
+  class Trail {
+    constructor(w, h) { this.reset(w, h); }
+    reset(w, h) {
+      const [smin, smax] = TRAILS.speed;
+      const [zmin, zmax] = [10, 800];
+      this.z = Math.random() * (zmax - zmin) + zmin;
+      this.x = Math.random() * w;
+      this.y = lerp(h * (GRID.horizon + 0.02), h * 0.98, Math.random());
+      this.speed = Math.random() * (smax - smin) + smin;
+      this.size = Math.random() * (TRAILS.size[1] - TRAILS.size[0]) + TRAILS.size[0];
+      this.life = Math.random() * (TRAILS.life[1] - TRAILS.life[0]) + TRAILS.life[0];
+      this.age = 0;
+    }
+    update(dt, w, h, vpX, vpY) {
+      this.z -= this.speed * 120 * dt;
+      this.age += dt;
+      if (this.z < 4 || this.age > this.life) this.reset(w, h);
+      const p = projectToScreen(this.x, this.z, vpX, vpY, w, h);
+      this.sx = p.x; this.sy = p.y;
+    }
+    draw(ctx) {
+      ctx.save();
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = THEME.glowShadowColor;
+      ctx.fillStyle = THEME.tronCore(0.85);
+      ctx.beginPath();
+      ctx.arc(this.sx, this.sy, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      // streak
+      ctx.globalAlpha = 0.6;
+      ctx.strokeStyle = THEME.tronRed(0.85);
+      ctx.lineWidth = this.size * 0.6;
+      ctx.beginPath();
+      ctx.moveTo(this.sx - this.size * 4, this.sy);
+      ctx.lineTo(this.sx, this.sy);
+      ctx.stroke();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  const trails = Array.from({ length: prefersReduced ? 0 : TRAILS.count }, () => new Trail(canvas.clientWidth, canvas.clientHeight));
+
+  // -------------------------------
+  // Ares-style speed lines (horizontal beacons)
+  // -------------------------------
+  class SpeedLine {
+    constructor(w, h) {
+      this.w = w; this.h = h;
+      this.reset();
+    }
+    reset() {
+      this.y = Math.random() * this.h;
+      this.len = Math.random() * (this.w * 0.25) + (this.w * 0.1);
+      const [smin, smax] = SPEEDLINES.speed;
+      this.speed = (Math.random() * (smax - smin) + smin) * (Math.random() < 0.5 ? 1 : -1);
+      this.x = this.speed > 0 ? -this.len : this.w + this.len;
+      this.width = Math.random() * (SPEEDLINES.width[1] - SPEEDLINES.width[0]) + SPEEDLINES.width[0];
+      this.alphaBase = 0.25 + Math.random() * 0.35;
+      this.phase = Math.random() * Math.PI * 2;
+    }
+    update(dt) {
+      this.x += this.speed * 60 * dt;
+      if (this.speed > 0 && this.x > this.w + this.len) this.reset();
+      if (this.speed < 0 && this.x < -this.len) this.reset();
+    }
+    draw(ctx, t) {
+      const pulse = Math.sin(t * 2 + this.phase) * 0.2 + this.alphaBase;
+      ctx.save();
+      ctx.lineWidth = this.width;
+      ctx.shadowBlur = SPEEDLINES.glow;
+      ctx.shadowColor = THEME.glowShadowColor;
+      ctx.strokeStyle = THEME.tronRed(pulse);
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x + (this.speed > 0 ? this.len : -this.len), this.y);
+      ctx.stroke();
+      // inner bright core
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = Math.max(1, this.width * 0.6);
+      ctx.strokeStyle = THEME.tronCore(Math.min(1, pulse * 1.2));
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+  const speedLines = [];
+  function seedSpeedLines() {
+    speedLines.length = 0;
+    const max = prefersReduced ? Math.floor(SPEEDLINES.max * 0.25) : SPEEDLINES.max;
+    for (let i = 0; i < max * 0.35; i++) {
+      speedLines.push(new SpeedLine(canvas.clientWidth, canvas.clientHeight));
+    }
+  }
+  seedSpeedLines();
+
+  // -------------------------------
+  // Grid drawing
+  // -------------------------------
+  let gridOffsetZ = 0;
+
+  function drawGrid(dt, vpX, vpY, w, h) {
+    gridOffsetZ += GRID.depthSpeed * 120 * dt;
+
+    // Vertical lines (pre-allocated paths)
+    ctx.save();
+    ctx.lineWidth = GRID.lineWidth;
+    ctx.shadowBlur = GRID.glow;
+    ctx.shadowColor = THEME.glowShadowColor;
+    ctx.strokeStyle = THEME.tronRed(0.55);
+
+    for (let i = 0; i <= GRID.vLines; i++) {
+      const t = i / GRID.vLines;
+      const x = lerp(0, w, t);
+      const path = gridPaths.v[i];
+      // rebuild path quickly: from horizon down to bottom
+      path.__proto__ = Path2D.prototype; // ensure proper prototype for some browsers
+      const pTop = { x: x, y: vpY };
+      const pBot = { x: lerp(vpX, x, 0.02), y: h };
+      const pth = new Path2D();
+      pth.moveTo(pTop.x, pTop.y);
+      pth.lineTo(pBot.x, pBot.y);
+      gridPaths.v[i] = pth;
+      ctx.stroke(pth);
+    }
+
+    // Horizontal lines (simulate depth spacing with log distribution)
+    const rows = GRID.hLines;
+    for (let r = 1; r < rows; r++) {
+      const z = (r + (gridOffsetZ % 1)) * 12; // spacing factor
+      const left = projectToScreen(0, z, vpX, vpY, w, h);
+      const right = projectToScreen(w, z, vpX, vpY, w, h);
+      ctx.beginPath();
+      ctx.moveTo(left.x, left.y);
+      ctx.lineTo(right.x, right.y);
+      ctx.stroke();
+    }
+
+    // Inner bright pass
+    ctx.shadowBlur = 0;
+    ctx.lineWidth = GRID.lineWidth * 0.7;
+    ctx.strokeStyle = THEME.tronCore(0.9);
+
+    for (let i = 0; i < gridPaths.v.length; i++) ctx.stroke(gridPaths.v[i]);
+    for (let r = 1; r < GRID.hLines; r++) {
+      const z = (r + (gridOffsetZ % 1)) * 12;
+      const left = projectToScreen(0, z, vpX, vpY, w, h);
+      const right = projectToScreen(w, z, vpX, vpY, w, h);
+      ctx.beginPath();
+      ctx.moveTo(left.x, left.y);
+      ctx.lineTo(right.x, right.y);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  // -------------------------------
+  // Animation loop
+  // -------------------------------
+  let rafId = null;
+  let lastT = performance.now();
+
+  function frame(now) {
+    const dt = Math.min(0.05, (now - lastT) / 1000); // clamp delta
+    lastT = now;
+
+    // Smooth parallax toward cursor
+    parallax.x = lerp(parallax.x, pointer.x, 0.06);
+    parallax.y = lerp(parallax.y, pointer.y, 0.06);
+
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const vpX = lerp(w * 0.5, parallax.x, 0.2);
+    const vpY = h * GRID.horizon;
+
+    // Draw passes
+    drawBackground();
+    drawGrid(dt, vpX, vpY, w, h);
+
+    // Trails
+    if (!prefersReduced) {
+      for (let i = 0; i < trails.length; i++) {
+        trails[i].update(dt, w, h, vpX, vpY);
+        trails[i].draw(ctx);
+      }
+    }
+
+    // Speed lines spawn/update/draw
+    if (!prefersReduced) {
+      if (speedLines.length < SPEEDLINES.max && Math.random() < SPEEDLINES.spawnChance * dt * 60) {
+        speedLines.push(new SpeedLine(w, h));
+      }
+      const t = now * 0.001;
+      for (let i = 0; i < speedLines.length; i++) {
+        speedLines[i].update(dt);
+        speedLines[i].draw(ctx, t);
+      }
+    }
+
+    // Vignette overlay last
+    if (vignetteCanvas) ctx.drawImage(vignetteCanvas, 0, 0);
+
+    rafId = requestAnimationFrame(frame);
+  }
+
+  if (!prefersReduced) {
+    rafId = requestAnimationFrame(frame);
+  } else {
+    // Static hero if user prefers reduced motion
+    drawBackground();
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = THEME.glowShadowColor;
+    ctx.strokeStyle = THEME.tronCore(0.9);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(w*0.2, h*0.35, w*0.6, h*0.3);
+    if (vignetteCanvas) ctx.drawImage(vignetteCanvas, 0, 0);
+  }
+
+  // Pause when tab hidden (battery friendly)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(rafId);
+    else { lastT = performance.now(); rafId = requestAnimationFrame(frame); }
+  });
+
+  // -------------------------------
+  // Keep your existing site logic
+  // -------------------------------
+  // Active Navigation Link Highlighting
+  const navLinks = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll('.tron-section');
+
+  function highlightNavLink() {
+    let currentActive = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (pageYOffset >= sectionTop - sectionHeight / 3) {
+        currentActive = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.href.includes(currentActive)) link.classList.add('active');
+    });
+  }
+  window.addEventListener('scroll', highlightNavLink);
+  highlightNavLink();
+
+  // Dynamic Footer Year
+  const currentYearSpan = document.getElementById('currentYear');
+  if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+});
+</script>
