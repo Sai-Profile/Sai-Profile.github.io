@@ -1,55 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
   // ===============================
-  // Tron: Ares Live Background (brighter lines + lighter black)
+  // Tron: Ares Live Background (forced motion)
   // ===============================
   const canvas = document.getElementById('tronGrid');
   const ctx = canvas.getContext('2d', { alpha: true });
 
-  // --- Theme (lighter backdrop, stronger glow) ---
+  // --- Theme (slightly lighter backdrop for clarity) ---
   const THEME = {
-    bgTop:    '#11121a', // lighter than before
-    bgBottom: '#0d0e16',
+    bgTop:    '#151725', // lighter than before
+    bgBottom: '#121423',
     tronRed:  (a=1) => `rgba(255, 0, 85, ${a})`,
-    tronCore: (a=1) => `rgba(255, 86, 140, ${a})`, // brighter core
+    tronCore: (a=1) => `rgba(255, 86, 140, ${a})`,
     glowShadowColor: 'rgba(255, 0, 85, 1)',
-    vignette: 'rgba(0,0,0,0.38)',  // less dark = more “transparent”
-    scanlineAlpha: 0.04            // reduce darkening from scanlines
+    vignette: 'rgba(0,0,0,0.32)',   // a touch lighter
+    scanlineAlpha: 0.035
   };
 
-  // --- Grid: slightly thicker, brighter, more glow ---
-  const GRID = {
-    horizon: 0.42,
-    depthSpeed: 0.015,
-    vLines: 20,
-    hLines: 30,
-    glow: 18,           // was 14
-    lineWidth: 1.4      // was ~1.25
-  };
+  // --- Grid / Lines tuned for clarity ---
+  const GRID = { horizon: 0.42, depthSpeed: 0.015, vLines: 20, hLines: 30, glow: 18, lineWidth: 1.4 };
+  const TRAILS = { count: 70, speed: [0.6, 1.8], size: [1.0, 2.6], life: [2.5, 6.0] };
+  const SPEEDLINES = { max: 120, spawnChance: 0.25, width: [1.5, 3.0], speed: [1.2, 2.6], glow: 18 };
 
-  // --- Trails: a touch bigger and brighter ---
-  const TRAILS = {
-    count: 70,
-    speed: [0.6, 1.8],
-    size: [1.0, 2.6],   // +clarity
-    life: [2.5, 6.0]
-  };
-
-  // --- Speed lines: clearer + brighter + more glow ---
-  const SPEEDLINES = {
-    max: 120,
-    spawnChance: 0.25,
-    width: [1.5, 3.0],  // thicker
-    speed: [1.2, 2.6],
-    glow: 18            // was 10
-  };
-
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 👉 Force motion ON (ignore prefers-reduced-motion)
+  const prefersReduced = false;
 
   // DPI-aware canvas sizing
   let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   function resizeCanvas() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const w = window.innerWidth, h = window.innerHeight;
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
     canvas.width = Math.floor(w * dpr);
@@ -64,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   resizeCanvas();
 
-  // Cursor-driven parallax
+  // Parallax target
   let pointer = { x: window.innerWidth/2, y: window.innerHeight*GRID.horizon };
   let parallax = { x: pointer.x, y: pointer.y };
   const lerp = (a,b,t) => a + (b - a) * t;
@@ -80,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let scanlinePattern = null;
   function buildScanlinePattern() {
     const p = document.createElement('canvas');
-    p.width = 2; p.height = 3; // every 3px
+    p.width = 2; p.height = 3;
     const pctx = p.getContext('2d');
     pctx.fillStyle = 'rgba(255,255,255,0.08)';
     pctx.fillRect(0, 1, 2, 1);
@@ -101,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Vignette (lighter)
+  // Vignette
   let vignetteCanvas = null;
   function buildVignette() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -118,16 +96,14 @@ document.addEventListener('DOMContentLoaded', () => {
     vignetteCanvas = v;
   }
 
-  // Perspective helpers
+  // Perspective helper
   function projectToScreen(x, z, vpX, vpY, w, h) {
     const persp = 0.0028;
     const scale = 1 / (1 + z * persp);
-    const sx = lerp(vpX, x, scale);
-    const sy = lerp(vpY, h, scale);
-    return { x: sx, y: sy };
+    return { x: lerp(vpX, x, scale), y: lerp(vpY, h, scale) };
   }
 
-  // Light trails (slightly bigger/brighter)
+  // Light trails
   class Trail {
     constructor(w, h) { this.reset(w, h); }
     reset(w, h) {
@@ -150,13 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     draw(ctx) {
       ctx.save();
-      ctx.shadowBlur = 16; // stronger glow
+      ctx.shadowBlur = 16;
       ctx.shadowColor = THEME.glowShadowColor;
       ctx.fillStyle = THEME.tronCore(0.95);
       ctx.beginPath();
       ctx.arc(this.sx, this.sy, this.size, 0, Math.PI * 2);
       ctx.fill();
-      // streak
       ctx.globalAlpha = 0.85;
       ctx.strokeStyle = THEME.tronRed(0.95);
       ctx.lineWidth = Math.max(1, this.size * 0.7);
@@ -168,11 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.globalAlpha = 1;
     }
   }
-  const trails = Array.from({ length: prefersReduced ? 0 : TRAILS.count }, () =>
+  const trails = Array.from({ length: TRAILS.count }, () =>
     new Trail(canvas.clientWidth, canvas.clientHeight)
   );
 
-  // Speed lines (clearer + brighter)
+  // Speed lines
   class SpeedLine {
     constructor(w, h) { this.w = w; this.h = h; this.reset(); }
     reset() {
@@ -182,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
       this.speed = (Math.random() * (smax - smin) + smin) * (Math.random() < 0.5 ? 1 : -1);
       this.x = this.speed > 0 ? -this.len : this.w + this.len;
       this.width = Math.random() * (SPEEDLINES.width[1] - SPEEDLINES.width[0]) + SPEEDLINES.width[0];
-      this.alphaBase = 0.5 + Math.random() * 0.25; // brighter base
+      this.alphaBase = 0.5 + Math.random() * 0.25;
       this.phase = Math.random() * Math.PI * 2;
     }
     update(dt) {
@@ -196,31 +171,27 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.lineWidth = this.width;
       ctx.shadowBlur = SPEEDLINES.glow;
       ctx.shadowColor = THEME.glowShadowColor;
-
-      // outer glow pass
+      // Outer glow
       ctx.strokeStyle = THEME.tronRed(pulse);
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(this.x + (this.speed > 0 ? this.len : -this.len), this.y);
       ctx.stroke();
-
-      // inner bright core
+      // Inner core
       ctx.shadowBlur = 0;
       ctx.lineWidth = Math.max(1, this.width * 0.65);
       ctx.strokeStyle = THEME.tronCore(Math.min(1, pulse * 1.15));
       ctx.stroke();
-
       ctx.restore();
     }
   }
   const speedLines = [];
   (function seedSpeedLines(){
-    speedLines.length = 0;
-    const max = prefersReduced ? Math.floor(SPEEDLINES.max * 0.25) : SPEEDLINES.max;
+    const max = SPEEDLINES.max;
     for (let i = 0; i < max * 0.4; i++) speedLines.push(new SpeedLine(canvas.clientWidth, canvas.clientHeight));
   })();
 
-  // Grid rendering (brighter)
+  // Grid
   let gridOffsetZ = 0;
   function drawGrid(dt, vpX, vpY, w, h) {
     gridOffsetZ += GRID.depthSpeed * 120 * dt;
@@ -229,21 +200,18 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineWidth = GRID.lineWidth;
     ctx.shadowBlur = GRID.glow;
     ctx.shadowColor = THEME.glowShadowColor;
-    ctx.strokeStyle = THEME.tronRed(0.7); // clearer
+    ctx.strokeStyle = THEME.tronRed(0.7);
 
     // verticals
     for (let i = 0; i <= GRID.vLines; i++) {
-      const t = i / GRID.vLines;
-      const x = t * w;
+      const t = i / GRID.vLines, x = t * w;
       ctx.beginPath();
       ctx.moveTo(x, vpY);
-      ctx.lineTo(lerp(vpX, x, 0.02), h);
+      ctx.lineTo( (vpX * 0.98) + (x - vpX) * 0.02, h );
       ctx.stroke();
     }
-
     // horizontals
-    const rows = GRID.hLines;
-    for (let r = 1; r < rows; r++) {
+    for (let r = 1; r < GRID.hLines; r++) {
       const z = (r + (gridOffsetZ % 1)) * 12;
       const l = projectToScreen(0, z, vpX, vpY, w, h);
       const rgt = projectToScreen(w, z, vpX, vpY, w, h);
@@ -252,20 +220,18 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.lineTo(rgt.x, rgt.y);
       ctx.stroke();
     }
-
-    // inner bright pass
+    // bright pass
     ctx.shadowBlur = 0;
     ctx.lineWidth = GRID.lineWidth * 0.75;
     ctx.strokeStyle = THEME.tronCore(1);
     for (let i = 0; i <= GRID.vLines; i++) {
-      const t = i / GRID.vLines;
-      const x = t * w;
+      const t = i / GRID.vLines, x = t * w;
       ctx.beginPath();
       ctx.moveTo(x, vpY);
-      ctx.lineTo(lerp(vpX, x, 0.02), h);
+      ctx.lineTo( (vpX * 0.98) + (x - vpX) * 0.02, h );
       ctx.stroke();
     }
-    for (let r = 1; r < rows; r++) {
+    for (let r = 1; r < GRID.hLines; r++) {
       const z = (r + (gridOffsetZ % 1)) * 12;
       const l = projectToScreen(0, z, vpX, vpY, w, h);
       const rgt = projectToScreen(w, z, vpX, vpY, w, h);
@@ -277,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.restore();
   }
 
-  // Animation loop
+  // Animation loop — always ON
   let rafId = null;
   let lastT = performance.now();
   function frame(now) {
@@ -294,33 +260,25 @@ document.addEventListener('DOMContentLoaded', () => {
     drawBackground();
     drawGrid(dt, vpX, vpY, w, h);
 
-    if (!prefersReduced) {
-      for (let i = 0; i < trails.length; i++) {
-        trails[i].update(dt, w, h, vpX, vpY);
-        trails[i].draw(ctx);
-      }
-      if (speedLines.length < SPEEDLINES.max && Math.random() < SPEEDLINES.spawnChance * dt * 60) {
-        speedLines.push(new SpeedLine(w, h));
-      }
-      const t = now * 0.001;
-      for (let i = 0; i < speedLines.length; i++) {
-        speedLines[i].update(dt);
-        speedLines[i].draw(ctx, t);
-      }
+    for (let i = 0; i < trails.length; i++) {
+      trails[i].update(dt, w, h, vpX, vpY);
+      trails[i].draw(ctx);
+    }
+    if (speedLines.length < SPEEDLINES.max && Math.random() < SPEEDLINES.spawnChance * dt * 60) {
+      speedLines.push(new SpeedLine(w, h));
+    }
+    const t = now * 0.001;
+    for (let i = 0; i < speedLines.length; i++) {
+      speedLines[i].update(dt);
+      speedLines[i].draw(ctx, t);
     }
 
     if (vignetteCanvas) ctx.drawImage(vignetteCanvas, 0, 0);
     rafId = requestAnimationFrame(frame);
   }
+  rafId = requestAnimationFrame(frame);
 
-  if (!prefersReduced) {
-    rafId = requestAnimationFrame(frame);
-  } else {
-    drawBackground();
-    if (vignetteCanvas) ctx.drawImage(vignetteCanvas, 0, 0);
-  }
-
-  // Pause when tab hidden
+  // Pause when tab hidden (battery friendly)
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) cancelAnimationFrame(rafId);
     else { lastT = performance.now(); rafId = requestAnimationFrame(frame); }
@@ -334,8 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function highlightNavLink() {
     let currentActive = '';
     sections.forEach(section => {
-      const top = section.offsetTop;
-      const height = section.clientHeight;
+      const top = section.offsetTop, height = section.clientHeight;
       if (pageYOffset >= top - height / 3) currentActive = section.id;
     });
     navLinks.forEach(link => {
