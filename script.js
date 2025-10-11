@@ -1,10 +1,11 @@
+// script.js
 // Slide deck navigation + resilient image galleries (3 sources) + active nav
 document.addEventListener('DOMContentLoaded', () => {
   // Year
   const y = document.getElementById('year');
   if (y) y.textContent = new Date().getFullYear();
 
-  // Sections and nav
+  // Sections and nav (5 slides for this deck)
   const navLinks = Array.from(document.querySelectorAll('nav a[href^="#"]'));
   const sections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
   const linkFor = (id) => navLinks.find(a => a.getAttribute('href') === `#${id}`);
@@ -72,57 +73,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (target) setTimeout(() => target.scrollIntoView({ behavior: 'instant', block: 'start' }), 0);
   }
 
-  // -------- Image galleries (3 sources per slide) --------
+  // -------- Topic-aware Image galleries (3 sources per slide) --------
+  // Stable mix of Unsplash (with params) + Wikimedia PNG/SVG thumbs.
   const galleries = {
+    // Slide 1 — Why Recruitment is Crucial
     title: [
-      { src:'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80', alt:'Tutoring support (Unsplash)', link:'https://unsplash.com/photos/9o8YdYGTT64' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Study_group_02.jpg/640px-Study_group_02.jpg', alt:'Study group (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Study_group_02.jpg' },
-      { src:'https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80', alt:'Students learning together (Unsplash)', link:'https://unsplash.com/photos/PQEOQHZnGBw' },
+      { src:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80', alt:'Team planning hiring needs around a table', link:'https://unsplash.com/photos/3fPXt37X6UQ' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Handshake_icon.svg/640px-Handshake_icon.svg.png', alt:'Handshake icon representing agreement and hiring', link:'https://commons.wikimedia.org/wiki/File:Handshake_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80', alt:'Interview discussion with candidate', link:'https://unsplash.com/photos/cZVthlrnlnQ' },
     ],
+    // Slide 2 — The Why & How of Hiring
     problem: [
-      { src:'https://images.unsplash.com/photo-1516534775068-ba3e7458af70?auto=format&fit=crop&w=1200&q=80', alt:'Busy academic corridor (Unsplash)', link:'https://unsplash.com/photos/VpOeXr5wmR4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Time_management_%28Unsplash%29.jpg/640px-Time_management_%28Unsplash%29.jpg', alt:'Time management (Wikimedia mirrored)', link:'https://commons.wikimedia.org/wiki/File:Time_management_(Unsplash).jpg' },
-      { src:'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=1200&q=80', alt:'Student under pressure (Unsplash)', link:'https://unsplash.com/photos/7JX0-bfiuxQ' },
+      { src:'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80', alt:'Candidate interview illustrating effectiveness', link:'https://unsplash.com/photos/u3WmDyKGsrY' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Checklist_NounProject.svg/640px-Checklist_NounProject.svg.png', alt:'Checklist icon representing hiring process clarity', link:'https://commons.wikimedia.org/wiki/File:Checklist_NounProject.svg' },
+      { src:'https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?auto=format&fit=crop&w=1200&q=80', alt:'Team aligning on roles and requirements', link:'https://unsplash.com/photos/7KLa-xLbSXA' },
     ],
+    // Slide 3 — Example: The Simple Truth
     aim: [
-      { src:'https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?auto=format&fit=crop&w=1200&q=80', alt:'Process documentation (Unsplash)', link:'https://unsplash.com/photos/7KLa-xLbSXA' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Sticky_notes_on_board.jpg/640px-Sticky_notes_on_board.jpg', alt:'Sticky notes planning (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Sticky_notes_on_board.jpg' },
-      { src:'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80', alt:'Team workshop (Unsplash)', link:'https://unsplash.com/photos/7omHUGhhmZ0' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png', alt:'Graph icon for ROI vs cost of hire', link:'https://commons.wikimedia.org/wiki/File:Graph_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80', alt:'High-performing team as outcome of good hire', link:'https://unsplash.com/photos/KE0nC8-58MQ' },
+      { src:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80', alt:'Wasted time symbolizing bad hire costs', link:'https://unsplash.com/photos/gcsNOsPEXfs' },
     ],
+    // Slide 4 — Techniques for Effective Staff
     rq: [
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Checklist_icon.svg/640px-Checklist_icon.svg.png', alt:'Quality assurance checklist (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Checklist_icon.svg' },
-      { src:'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=1200&q=80', alt:'Team reviewing checklist (Unsplash)', link:'https://unsplash.com/photos/7QU7I5KZoM4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/ISO_9001_certified.svg/640px-ISO_9001_certified.svg.png', alt:'Standards badge (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:ISO_9001_certified.svg' },
+      { src:'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80', alt:'Work sample task at a desk', link:'https://unsplash.com/photos/7omHUGhhmZ0' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Bow_and_arrow_icon.svg/640px-Bow_and_arrow_icon.svg.png', alt:'Precision icon metaphor for targeted skills', link:'https://commons.wikimedia.org/wiki/File:Bow_and_arrow_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1524567497590-6a2a7f01007c?auto=format&fit=crop&w=1200&q=80', alt:'Team culture conversation for fit', link:'https://unsplash.com/photos/ibpzzTR3sxg' },
     ],
+    // Slide 5 — Techniques for Efficient Staff
     scope: [
-      { src:'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?auto=format&fit=crop&w=1200&q=80', alt:'Exam & invigilation (Unsplash)', link:'https://unsplash.com/photos/xkBaqlcqeb4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Exam_time.jpg/640px-Exam_time.jpg', alt:'Exam time (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Exam_time.jpg' },
-      { src:'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80', alt:'Online class setup (Unsplash)', link:'https://unsplash.com/photos/-uHVRvDr7pg' },
-    ],
-    design: [
-      { src:'https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?auto=format&fit=crop&w=1200&q=80', alt:'Policies & standards (Unsplash)', link:'https://unsplash.com/photos/7VDoqI4P3n4' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Document_icon_%28the_Noun_Project_15515%29.svg/640px-Document_icon_%28the_Noun_Project_15515%29.svg.png', alt:'Document icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Document_icon_(the_Noun_Project_15515).svg' },
-      { src:'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80', alt:'Standards review (Unsplash)', link:'https://unsplash.com/photos/cO2eCuEtnYI' },
-    ],
-    methods: [
-      { src:'https://images.unsplash.com/photo-1581375221564-2fe02eb47702?auto=format&fit=crop&w=1200&q=80', alt:'Tutoring session (Unsplash)', link:'https://unsplash.com/photos/uXnCqj6GpG0' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Interview_icon.png/640px-Interview_icon.png', alt:'Interview icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Interview_icon.png' },
-      { src:'https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=1200&q=80', alt:'Focus group discussion (Unsplash)', link:'https://unsplash.com/photos/u0vgcIOQG08' },
-    ],
-    kpi: [
-      { src:'https://images.unsplash.com/photo-1551281044-8b39f77b0d5c?auto=format&fit=crop&w=1200&q=80', alt:'KPI dashboard (Unsplash)', link:'https://unsplash.com/photos/3Mhgvrk4tjM' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png', alt:'Graph icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Graph_icon.svg' },
-      { src:'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80', alt:'Charts on laptop (Unsplash)', link:'https://unsplash.com/photos/mR1CIDduGLc' },
-    ],
-    plan: [
-      { src:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80', alt:'Team planning (Unsplash)', link:'https://unsplash.com/photos/3fPXt37X6UQ' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Calendar_icon_2.svg/640px-Calendar_icon_2.svg.png', alt:'Calendar icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Calendar_icon_2.svg' },
-      { src:'https://images.unsplash.com/photo-1542744173-05336fcc7ad4?auto=format&fit=crop&w=1200&q=80', alt:'Project planning (Unsplash)', link:'https://unsplash.com/photos/cvBBO4PzWPg' },
-    ],
-    ask: [
-      { src:'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80', alt:'Decision & approval (Unsplash)', link:'https://unsplash.com/photos/UcfKYTan-LU' },
-      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Handshake_icon.svg/640px-Handshake_icon.svg.png', alt:'Handshake icon (Wikimedia)', link:'https://commons.wikimedia.org/wiki/File:Handshake_icon.svg' },
-      { src:'https://images.unsplash.com/photo-1551836022-4c4fae74f77b?auto=format&fit=crop&w=1200&q=80', alt:'Agreement in meeting (Unsplash)', link:'https://unsplash.com/photos/1K9T5YiZ2WU' },
+      { src:'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80', alt:'Colleagues sharing referrals', link:'https://unsplash.com/photos/6U5AEmQIajg' },
+      { src:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Megaphone_icon.svg/640px-Megaphone_icon.svg.png', alt:'Megaphone icon symbolizing clear job ads', link:'https://commons.wikimedia.org/wiki/File:Megaphone_icon.svg' },
+      { src:'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80', alt:'Shortlist of candidates ready on a waiting list', link:'https://unsplash.com/photos/u3WmDyKGsrY' },
     ],
   };
 
@@ -150,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       img.setAttribute('referrerpolicy', 'no-referrer');
       img.onerror = function () {
         this.onerror = null;
-        this.src = `https://placehold.co/800x500?text=${encodeURIComponent(item.alt || 'LSC Image')}`;
+        this.src = `https://placehold.co/800x500?text=${encodeURIComponent(item.alt || 'Slide Image')}`;
       };
       img.src = item.src;
       img.alt = item.alt || '';
