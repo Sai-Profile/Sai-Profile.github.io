@@ -1,6 +1,6 @@
 // script.js
-// Renders your 5 recruitment slides into existing <section id="..."> nodes,
-// applies per-slide backgrounds from JS, and wires nav + Prev/Next controls.
+// Injects your 5 slides (verbatim), applies per-slide backgrounds from JS,
+// and wires smooth nav + Prev/Next controls. No HTML changes needed.
 
 document.addEventListener('DOMContentLoaded', () => {
   /* ---------------------------------------------
@@ -38,23 +38,23 @@ document.addEventListener('DOMContentLoaded', () => {
   sections.forEach(sec => io.observe(sec));
 
   /* ---------------------------------------------
-   * 1) Slide content (kept in JS)
-   *    - Keys must match section IDs in your HTML
+   * 1) Slide content (from your message)
+   *    Keys must match <section id="..."> in your HTML
    * -------------------------------------------*/
   const CONTENT = {
     title: {
-      kicker: 'Slide 1',
+      kicker: 'Slide 1 — Why Recruitment is Crucial',
       h2: 'Answer to Question 1: Why Recruitment is Important',
       bulletsTop: [
-        '<strong>Core statement:</strong> Recruitment is critical because people are the main drivers of business success.'
+        '<strong>Core Statement:</strong> Recruitment is critical because people are the main drivers of business success.'
       ],
       bullets: [
         '<strong>Get the Best —</strong> It ensures you find top talent with the right skills. <span class="script-inline">“Hiring is about securing the best skills available to ensure quality work.”</span>',
         '<strong>Increase Profit —</strong> Better staff means higher productivity and more money. <span class="script-inline">“Good staff directly increase revenue by working smarter and producing more.”</span>',
-        '<strong>Staff Stay Longer —</strong> Finding the right team fit reduces the high cost of turnover. <span class="script-inline">“Selecting people who fit the culture saves money by keeping teams stable.”</span>',
-        '<strong>Grow the Company —</strong> It brings in skills needed to expand into new areas. <span class="script-inline">“Recruitment provides expertise to tackle future growth.”</span>'
+        '<strong>Staff Stay Longer —</strong> Finding the right team fit reduces the high cost of staff turnover. <span class="script-inline">“Selecting people who fit the culture saves us money by keeping teams stable.”</span>',
+        '<strong>Grow the Company —</strong> It brings in the skills needed to expand the business into new areas. <span class="script-inline">“Recruitment provides the expertise required to successfully tackle future growth.”</span>'
       ],
-      explain: 'Great hiring powers quality, profit, retention, and growth. Get the skills and the culture-fit right, and the business compounds value over time.',
+      explain: '<em>Note:</em> The financial impact of a bad vs. good hire is detailed on Slide 3.',
       figure: {
         src: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
         alt: 'Team planning hiring needs around a table',
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
 
     problem: {
-      kicker: 'Slide 2',
+      kicker: 'Slide 2 — The Why & How of Hiring 🚀',
       h2: 'Hiring Right: The Simple Guide',
       subtitle: 'The Techniques for Getting the Best Staff',
       bullets: [
@@ -72,8 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '<strong>Effectiveness:</strong> Techniques to find people who can do the job well.',
         '<strong>Efficiency:</strong> Methods to hire the best people quickly and affordably.'
       ],
-      explain: 'Hiring connects strategy to execution. Focus on outcomes: profitable growth, proven capability, and a process that’s quick without sacrificing quality.',
-      script: '“Simple, clear hiring raises quality and reduces cost.”',
+      explain: 'These three focus areas keep hiring aligned to outcomes: profit & growth, capability, and speed/cost.',
       figure: {
         src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
         alt: 'Interview panel assessing candidates',
@@ -83,15 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
     },
 
     aim: {
-      kicker: 'Slide 3',
-      h2: 'Example: The Simple Truth',
+      kicker: 'Slide 3 — Example: The Simple Truth 💡',
+      h2: 'Quality Over Speed',
       bullets: [
         '<strong>A great hire is an investment;</strong> a bad hire is a debt.',
-        '<strong>Bad hire result:</strong> wasted time, poor work, team stress. <span class="script-inline">“When we rush to hire, the mistakes quickly become expensive.”</span>',
-        '<strong>Good hire result:</strong> high quality, fast results, team success. <span class="script-inline">“Taking time to hire the right person ensures a big return on our investment.”</span>',
-        '<strong>Key takeaway:</strong> Always prioritize quality over speed.'
+        '<strong>Bad Hire Result:</strong> A quick, poor choice leads to wasted time, bad work, and team stress. <span class="script-inline">“When we rush to hire, the mistakes quickly become expensive.”</span>',
+        '<strong>Good Hire Result:</strong> A smart choice leads to high quality, fast results, and team success. <span class="script-inline">“Taking time to hire the right person ensures a big return on our investment.”</span>',
+        '<strong>Key Takeaway:</strong> Always prioritize quality over speed.'
       ],
-      explain: 'The cost curve is real: haste creates rework, delays, and morale dips; quality hiring compounds returns in output and stability.',
       figure: {
         src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png',
         alt: 'Graph icon representing ROI and costs',
@@ -101,15 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
     },
 
     rq: {
-      kicker: 'Slide 4',
-      h2: 'Techniques for Effective Staff (Hiring the Right Person)',
+      kicker: 'Slide 4 — Techniques for Effective Staff (Hiring the Right Person) ✅',
+      h2: 'Evaluate Skills, Evidence, and Fit',
       bullets: [
-        '<strong>Focus:</strong> what they can do and how they fit.',
-        '<strong>Work Test First:</strong> small task required for the job (e.g., write an email, solve a sample problem). <span class="script-inline">“We test skills directly, because actions speak louder than resumes.”</span>',
-        '<strong>Ask About the Past:</strong> what they actually did in a difficult situation. <span class="script-inline">“Past behavior is the best predictor of future performance.”</span>',
-        '<strong>Check Team Fit:</strong> confirm working style matches our culture. <span class="script-inline">“A candidate must thrive and feel comfortable in our environment.”</span>'
+        'Focus on what they can do and how they fit.',
+        '<strong>Work Test First:</strong> Ask them to do a small task required for the job (e.g., write an email or solve a sample problem). <span class="script-inline">“We test skills directly, because actions speak louder than resumes.”</span>',
+        '<strong>Ask About the Past:</strong> Ask what they actually did in a difficult situation at their last job. <span class="script-inline">“Past behavior is the best predictor of future performance.”</span>',
+        '<strong>Check the Team Fit:</strong> Confirm their working style matches our culture (e.g., Are they collaborative? Are they honest?). <span class="script-inline">“A candidate must be able to thrive and feel comfortable in our specific work environment.”</span>'
       ],
-      explain: 'Validate ability with real work, validate reliability with real stories, and validate belonging with culture alignment.',
+      explain: 'Use direct work evidence, behavioral detail, and cultural alignment to reduce hiring risk.',
       figure: {
         src: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80',
         alt: 'Practical work sample test at a desk',
@@ -119,15 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
     },
 
     scope: {
-      kicker: 'Slide 5',
-      h2: 'Techniques for Efficient Staff (Hiring Fast & Smart)',
+      kicker: 'Slide 5 — Techniques for Efficient Staff (Hiring Fast & Smart) 💰',
+      h2: 'Be Ready, Leverage Networks, Filter Early',
       bullets: [
-        '<strong>Be organized & leverage your team.</strong>',
-        '<strong>Referral Bonus:</strong> reward employees for recommendations. <span class="script-inline">“Great employees know great people—pay them to share.”</span>',
-        '<strong>The Waiting List:</strong> keep excellent candidates for future roles. <span class="script-inline">“When a role opens, we check our waiting list first.”</span>',
-        '<strong>Clear Job Ad:</strong> precise description that filters out noise. <span class="script-inline">“A good job ad acts like a filter for relevance.”</span>'
+        'Be organized and leverage your current team.',
+        '<strong>Referral Bonus:</strong> Give current employees a reward for recommending people. <span class="script-inline">“Our current great employees know other great people, so we pay them to share.”</span>',
+        '<strong>The Waiting List:</strong> Keep a list of excellent candidates we liked but didn\'t hire right away. <span class="script-inline">“When a new role opens, we check our waiting list first to save weeks of searching.”</span>',
+        '<strong>Clear Job Ad:</strong> Write a very clear job description that immediately filters out unqualified applicants. <span class="script-inline">“A good job ad acts like a filter, ensuring only relevant people apply.”</span>'
       ],
-      explain: 'Systematize speed: mobilize referrals, keep warm pipelines, and use job ads that pre-qualify. You’ll cut time-to-hire without losing quality.',
+      explain: 'Referrals, warm pipelines, and sharp job ads cut time-to-hire while protecting quality.',
       figure: {
         src: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
         alt: 'Colleagues sharing referrals',
@@ -138,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ---------------------------------------------
-   * 2) Render function (injects content)
+   * 2) Render into existing <section id="...">
    * -------------------------------------------*/
   const renderSlide = (id, data) => {
     const sec = document.getElementById(id);
@@ -180,12 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   };
 
-  // Render all (only IDs that exist will render)
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
 
   /* ---------------------------------------------
    * 3) Backgrounds from JS (no HTML edits needed)
-   *    - pick a CSS class or an image per slide
    * -------------------------------------------*/
   const SLIDE_BG = {
     title:   { type: 'class', className: 'bg-spotlight' },
@@ -198,9 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toDirectDrive = (url) => {
     const m = url && url.match(/\/d\/([^/]+)\//);
     return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
-    // still recommend repo assets for speed/reliability
   };
-
   const clearBg = (el) => {
     el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh');
     el.style.removeProperty('--bg-image');
@@ -218,13 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Apply backgrounds
   Object.entries(SLIDE_BG).forEach(([id, cfg]) => {
     const sec = document.getElementById(id);
     if (sec) applyBg(sec, cfg);
   });
 
-  // Pleasant default preset for the first 3 slides if nothing set
+  // Pleasant default preset for first 3 if none set
   (function presetIfNone(){
     const slides = document.querySelectorAll('main section');
     const hasBg = s => s && (s.className.match(/\bbg-/) || s.classList.contains('bg-img'));
@@ -235,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })();
 
   /* ---------------------------------------------
-   * 4) Prev / Next controls + keyboard nav
+   * 4) Prev / Next controls + keyboard
    * -------------------------------------------*/
   const controls = document.createElement('div');
   controls.className = 'slide-controls';
