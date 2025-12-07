@@ -1,51 +1,70 @@
 // script.js
-// Injects your slides, applies per-slide backgrounds, smooth nav, slide controls,
-// and (NEW) Source + Next per figure with one option per provider + robust failover.
+// Slides + dropdown nav + “Source  Next” per figure (1 per provider), robust preload/failover.
 
 document.addEventListener('DOMContentLoaded', () => {
-  /* ---------------------------------------------
-   * 0) Small niceties
-   * -------------------------------------------*/
-  const year = document.getElementById('year');
-  if (year) year.textContent = new Date().getFullYear();
+  /* ---------- niceties ---------- */
+  const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
 
-  // Smooth anchor nav
-  document.querySelectorAll('nav a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
+  /* ---------- Dropdown nav (builds from sections) ---------- */
+  function buildNavMenu() {
+    const menu = document.getElementById('navMenu');
+    if (!menu) return;
+    menu.innerHTML = '';
+    const sections = Array.from(document.querySelectorAll('main section[id]'));
+    sections.forEach(sec => {
+      const label = (sec.querySelector('h2')?.textContent || sec.id || '').trim() || 'Slide';
+      const a = document.createElement('a');
+      a.href = `#${sec.id}`;
+      a.role = 'menuitem';
+      a.textContent = label;
+      menu.appendChild(a);
+    });
+  }
+  function initDropdownBehavior() {
+    const toggle = document.getElementById('navToggle');
+    const menu = document.getElementById('navMenu');
+    if (!toggle || !menu) return;
+    const open = () => { toggle.setAttribute('aria-expanded', 'true'); menu.hidden = false; };
+    const close = () => { toggle.setAttribute('aria-expanded', 'false'); menu.hidden = true; };
+    toggle.addEventListener('click', () => (toggle.getAttribute('aria-expanded') === 'true' ? close() : open()));
+    document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && !toggle.contains(e.target)) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { close(); toggle.focus(); } });
+    menu.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href^="#"]'); if (!a) return;
+      e.preventDefault();
       const id = a.getAttribute('href').slice(1);
       const target = document.getElementById(id);
-      if (!target) return;
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      history.replaceState(null, '', `#${id}`);
-    });
-  });
-
-  // Scroll spy
-  const navLinks = Array.from(document.querySelectorAll('nav a[href^="#"]'));
-  const sections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
-  const linkFor = (id) => navLinks.find(a => a.getAttribute('href') === `#${id}`);
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const link = linkFor(entry.target.id);
-      if (!link) return;
-      if (entry.isIntersecting) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
+      if (target) {
+        close();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', `#${id}`);
       }
     });
-  }, { rootMargin: '-35% 0px -60% 0px', threshold: [0, 1] });
-  sections.forEach(sec => io.observe(sec));
+  }
+  function initScrollSpy() {
+    const menu = document.getElementById('navMenu'); if (!menu) return;
+    const links = () => Array.from(menu.querySelectorAll('a[href^="#"]'));
+    const linkFor = (id) => links().find(a => a.getAttribute('href') === `#${id}`);
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const link = linkFor(entry.target.id);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links().forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-35% 0px -60% 0px', threshold: [0, 1] });
+    document.querySelectorAll('main section[id]').forEach(sec => obs.observe(sec));
+  }
+  // Init once (will rebuild after slides render)
+  buildNavMenu(); initDropdownBehavior(); initScrollSpy();
 
-  /* ---------------------------------------------
-   * 1) Slide content
-   * -------------------------------------------*/
+  /* ---------- slide content ---------- */
   const CONTENT = {
-    contents: {
-      kicker: 'Slide 1 — Contents',
-      h2: 'What We’ll Cover: The Solar System Overview',
-      bulletsTop: ['<strong>Key points:</strong>'],
-      bullets: [
+    contents: { kicker:'Slide 1 — Contents', h2:'What We’ll Cover: The Solar System Overview',
+      bulletsTop:['<strong>Key points:</strong>'],
+      bullets:[
         '<strong>What is the Solar System?</strong> — Basic idea and what it includes.',
         '<strong>The Sun</strong> — Our central star.',
         '<strong>Inner planets</strong> — Rocky worlds close to the Sun.',
@@ -54,140 +73,103 @@ document.addEventListener('DOMContentLoaded', () => {
         '<strong>Orbits & gravity</strong> — What holds it all together.',
         '<strong>Fun facts & recap</strong> — Cool details and summary.'
       ],
-      script: '“Here’s what we’ll cover today: from the Sun, to the planets, to the tiny objects that share our Solar System.”',
-      figure: { alt: 'Collage of the Sun and major Solar System bodies', cap: 'Today’s roadmap: the Solar System at a glance' }
+      script:'“Here’s what we’ll cover today: from the Sun, to the planets, to the tiny objects that share our Solar System.”',
+      figure:{ alt:'Collage of the Sun and major Solar System bodies', cap:'Today’s roadmap: the Solar System at a glance' }
     },
-
-    'what-is': {
-      kicker: 'Slide 2 — What Is the Solar System?',
-      h2: 'Definition and Main Members',
-      bullets: [
+    'what-is': { kicker:'Slide 2 — What Is the Solar System?', h2:'Definition and Main Members',
+      bullets:[
         '<strong>Definition</strong> — The Solar System is the Sun plus everything that orbits it.',
         '<strong>Main members</strong> — Planets, dwarf planets, moons, asteroids, comets, and dust.',
         '<strong>Location</strong> — It sits inside a galaxy called the Milky Way.'
       ],
-      script: '“The Solar System is simply our Sun and all the objects that move around it inside the Milky Way.”',
-      figure: { alt: 'Diagram showing the Sun and orbiting planets', cap: 'The Solar System and its members' }
+      script:'“The Solar System is simply our Sun and all the objects that move around it inside the Milky Way.”',
+      figure:{ alt:'Diagram showing the Sun and orbiting planets', cap:'The Solar System and its members' }
     },
-
-    sun: {
-      kicker: 'Slide 3 — The Sun: Our Star',
-      h2: 'Huge, Hot, and the System’s Engine',
-      bullets: [
+    sun: { kicker:'Slide 3 — The Sun: Our Star', h2:'Huge, Hot, and the System’s Engine',
+      bullets:[
         '<strong>Huge and hot</strong> — The Sun is a giant ball of hot gas (plasma).',
         '<strong>Energy source</strong> — Produces light and heat via nuclear fusion.',
         '<strong>Center of gravity</strong> — Its gravity keeps all planets in orbit.'
       ],
-      script: '“The Sun is the powerful star at the center, giving us light, heat, and the gravity that holds everything together.”',
-      figure: { alt: 'Close-up of the Sun’s surface and prominences', cap: 'Our local star: the Sun' }
+      script:'“The Sun is the powerful star at the center, giving us light, heat, and the gravity that holds everything together.”',
+      figure:{ alt:'Close-up of the Sun’s surface and prominences', cap:'Our local star: the Sun' }
     },
-
-    inner: {
-      kicker: 'Slide 4 — Inner Rocky Planets',
-      h2: 'Mercury, Venus, Earth, and Mars',
-      bullets: [
+    inner: { kicker:'Slide 4 — Inner Rocky Planets', h2:'Mercury, Venus, Earth, and Mars',
+      bullets:[
         '<strong>Members</strong> — Mercury, Venus, Earth, and Mars.',
         '<strong>Rocky worlds</strong> — Solid surfaces of rock and metal.',
         '<strong>Closer to the Sun</strong> — Smaller and warmer than the outer planets.'
       ],
-      script: '“The four inner planets are small, rocky worlds that orbit close to the Sun.”',
-      figure: { alt: 'Montage of the four inner rocky planets', cap: 'The inner Solar System' }
+      script:'“The four inner planets are small, rocky worlds that orbit close to the Sun.”',
+      figure:{ alt:'Montage of the four inner rocky planets', cap:'The inner Solar System' }
     },
-
-    'earth-mars': {
-      kicker: 'Slide 5 — A Closer Look at Earth and Mars',
-      h2: 'Earth & Mars Highlights',
-      bullets: [
+    'earth-mars': { kicker:'Slide 5 — A Closer Look at Earth and Mars', h2:'Earth & Mars Highlights',
+      bullets:[
         '<strong>Earth</strong> — Our home planet with liquid water and life.',
         '<strong>Protective atmosphere</strong> — Helps keep temperatures stable.',
         '<strong>Mars</strong> — Cold, dry, explored by robots and rovers.'
       ],
-      script: '“Earth is the only known planet with life, and Mars is our main target for future exploration.”',
-      figure: { alt: 'Earth and Mars side-by-side comparison', cap: 'Earth vs. Mars' }
+      script:'“Earth is the only known planet with life, and Mars is our main target for future exploration.”',
+      figure:{ alt:'Earth and Mars side-by-side comparison', cap:'Earth vs. Mars' }
     },
-
-    'gas-giants': {
-      kicker: 'Slide 6 — The Gas Giants: Jupiter and Saturn',
-      h2: 'Jupiter & Saturn',
-      bullets: [
+    'gas-giants': { kicker:'Slide 6 — The Gas Giants: Jupiter and Saturn', h2:'Jupiter & Saturn',
+      bullets:[
         '<strong>Very large planets</strong> — Mostly hydrogen and helium.',
         '<strong>Thick atmospheres</strong> — No solid surface like Earth.',
         '<strong>Rings and moons</strong> — Saturn’s rings; both have many moons.'
       ],
-      script: '“Jupiter and Saturn are huge gas giants with thick atmospheres, many moons, and in Saturn’s case, beautiful rings.”',
-      figure: { alt: 'Jupiter and Saturn with visible bands and rings', cap: 'The gas giants' }
+      script:'“Jupiter and Saturn are huge gas giants with thick atmospheres, many moons, and in Saturn’s case, beautiful rings.”',
+      figure:{ alt:'Jupiter and Saturn with visible bands and rings', cap:'The gas giants' }
     },
-
-    'ice-giants': {
-      kicker: 'Slide 7 — The Ice Giants: Uranus and Neptune',
-      h2: 'Uranus & Neptune',
-      bullets: [
+    'ice-giants': { kicker:'Slide 7 — The Ice Giants: Uranus and Neptune', h2:'Uranus & Neptune',
+      bullets:[
         '<strong>Colder and farther</strong> — Orbit much farther from the Sun.',
         '<strong>Icy mix</strong> — Hydrogen, helium, and ‘ices’ like water, methane, ammonia.',
         '<strong>Unique features</strong> — Uranus tilts on its side; Neptune has strong winds.'
       ],
-      script: '“Uranus and Neptune are distant, icy giants with strange tilts, strong winds, and very cold temperatures.”',
-      figure: { alt: 'Uranus and Neptune in deep blue hues', cap: 'The ice giants' }
+      script:'“Uranus and Neptune are distant, icy giants with strange tilts, strong winds, and very cold temperatures.”',
+      figure:{ alt:'Uranus and Neptune in deep blue hues', cap:'The ice giants' }
     },
-
-    'dwarf-kuiper': {
-      kicker: 'Slide 8 — Dwarf Planets and the Kuiper Belt',
-      h2: 'Pluto and Beyond',
-      bullets: [
+    'dwarf-kuiper': { kicker:'Slide 8 — Dwarf Planets and the Kuiper Belt', h2:'Pluto and Beyond',
+      bullets:[
         '<strong>Dwarf planets</strong> — Smaller worlds like Pluto, Eris, Ceres.',
         '<strong>Kuiper Belt</strong> — Beyond Neptune, full of icy bodies.',
         '<strong>Not full planets</strong> — Round but share orbits with other objects.'
       ],
-      script: '“Beyond Neptune lies the Kuiper Belt, home to Pluto and many other small, icy dwarf planets.”',
-      figure: { alt: 'New Horizons image of Pluto / Kuiper Belt artist impression', cap: 'Dwarf planets and the Kuiper Belt' }
+      script:'“Beyond Neptune lies the Kuiper Belt, home to Pluto and many other small, icy dwarf planets.”',
+      figure:{ alt:'New Horizons image of Pluto / Kuiper Belt artist impression', cap:'Dwarf planets and the Kuiper Belt' }
     },
-
-    'small-bodies': {
-      kicker: 'Slide 9 — Asteroids, Comets, and Other Small Bodies',
-      h2: 'Rocks, Ice, and Shooting Stars',
-      bullets: [
+    'small-bodies': { kicker:'Slide 9 — Asteroids, Comets, and Other Small Bodies', h2:'Rocks, Ice, and Shooting Stars',
+      bullets:[
         '<strong>Asteroids</strong> — Rocky objects; many in the asteroid belt.',
         '<strong>Comets</strong> — Icy bodies with bright tails near the Sun.',
         '<strong>Meteoroids</strong> — Small rocks that create meteors (shooting stars).'
       ],
-      script: '“The Solar System is also filled with smaller visitors like asteroids, comets, and the meteors we see as shooting stars.”',
-      figure: { alt: 'Asteroid close-up, comet with tail, and meteor shower', cap: 'Small bodies of the Solar System' }
+      script:'“The Solar System is also filled with smaller visitors like asteroids, comets, and the meteors we see as shooting stars.”',
+      figure:{ alt:'Asteroid close-up, comet with tail, and meteor shower', cap:'Small bodies of the Solar System' }
     },
-
-    orbits: {
-      kicker: 'Slide 10 — Orbits and Gravity',
-      h2: 'Gravity, Ellipses, and Motion',
-      bullets: [
+    orbits: { kicker:'Slide 10 — Orbits and Gravity', h2:'Gravity, Ellipses, and Motion',
+      bullets:[
         '<strong>Gravity rules</strong> — The Sun’s gravity pulls planets into orbits.',
         '<strong>Elliptical orbits</strong> — Slightly oval, not perfect circles.',
         '<strong>Balance</strong> — Forward motion + gravity = stable paths.'
       ],
-      script: '“Gravity pulls the planets toward the Sun while their motion carries them forward, creating stable orbits.”',
-      figure: { alt: 'Diagram of elliptical orbit around the Sun', cap: 'How orbits work' }
+      script:'“Gravity pulls the planets toward the Sun while their motion carries them forward, creating stable orbits.”',
+      figure:{ alt:'Diagram of elliptical orbit around the Sun', cap:'How orbits work' }
     },
-
-    recap: {
-      kicker: 'Slide 11 — Fun Facts and Recap',
-      h2: 'Quick Facts & Wrap-Up',
-      bullets: [
+    recap: { kicker:'Slide 11 — Fun Facts and Recap', h2:'Quick Facts & Wrap-Up',
+      bullets:[
         '<strong>Size difference</strong> — The Sun holds almost all the mass.',
         '<strong>Distances</strong> — Light takes ~8 minutes Sun→Earth.',
         '<strong>Quick recap</strong> — Sun, planets, dwarf planets, and smaller objects.'
       ],
-      script: '“To recap, our Solar System is a huge family of worlds, all held together by the Sun’s gravity and energy.”',
-      figure: { alt: 'Scale illustration of Sun vs planets', cap: 'Recap: our Solar System family' }
+      script:'“To recap, our Solar System is a huge family of worlds, all held together by the Sun’s gravity and energy.”',
+      figure:{ alt:'Scale illustration of Sun vs planets', cap:'Recap: our Solar System family' }
     }
   };
 
-  /* ---------------------------------------------
-   * 1.5) One option per provider, with credits
-   * -------------------------------------------*/
-  const R = (items) => {
-    const arr = items.filter(x => x && x.src).slice(0, 5);
-    while (arr.length && arr.length < 5) arr.push(arr[0]);
-    return arr;
-  };
-
+  /* ---------- image options: 1 per provider ---------- */
+  const R = (items) => { const arr = items.filter(x=>x&&x.src).slice(0,5); while(arr.length && arr.length<5) arr.push(arr[0]); return arr; };
   const RELATED_IMAGES = {
     contents: R([
       { src:'https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_sys8.jpg', credit:'https://commons.wikimedia.org/wiki/File:Solar_sys8.jpg' },
@@ -257,20 +239,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ])
   };
 
-  /* ---------------------------------------------
-   * 2) Render into existing <section id="...">
-   *    (Source + Next for ALL figures; Source updates with image)
-   * -------------------------------------------*/
+  /* ---------- render slides (figures: Source + Next) ---------- */
   const renderSlide = (id, data) => {
-    const sec = document.getElementById(id);
-    if (!sec || !data) return;
+    const sec = document.getElementById(id); if (!sec || !data) return;
 
     const kicker = data.kicker ? `<div class="kicker">${data.kicker}</div>` : '';
     const subtitle = data.subtitle ? `<p class="subtitle">${data.subtitle}</p>` : '';
-    const bulletsTop = data.bulletsTop?.length
-      ? `<ul>${data.bulletsTop.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
-    const bullets = data.bullets?.length
-      ? `<ul>${data.bullets.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
+    const bulletsTop = data.bulletsTop?.length ? `<ul>${data.bulletsTop.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
+    const bullets = data.bullets?.length ? `<ul>${data.bullets.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
     const explain = data.explain ? `<div class="explain">${data.explain}</div>` : '';
     const script = data.script ? `<p class="script">${data.script}</p>` : '';
 
@@ -310,27 +286,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
 
-  /* ---------------------------------------------
-   * 2.5) Image utilities + Next wiring (robust)
-   * -------------------------------------------*/
-  function preloadOnce(url) {
-    return new Promise((resolve, reject) => {
-      if (!url) return reject(new Error('empty-url'));
-      const probe = new Image();
-      probe.referrerPolicy = 'no-referrer';
-      probe.onload = () => resolve(url);
-      probe.onerror = () => reject(new Error('load-failed'));
-      probe.src = url;
+  // Rebuild dropdown menu now that <h2> exist
+  buildNavMenu();
+
+  /* ---------- image preload/failover + Next wiring ---------- */
+  function preloadOnce(url){
+    return new Promise((res, rej) => {
+      if (!url) return rej(new Error('empty'));
+      const img = new Image();
+      img.referrerPolicy = 'no-referrer';
+      img.onload = () => res(url);
+      img.onerror = () => rej(new Error('fail'));
+      img.src = url;
     });
   }
-  async function firstWorking(urls) {
-    for (const u of urls) {
-      try { return await preloadOnce(u); } catch (_) {}
-    }
-    return null;
-  }
+  async function firstWorking(arr){ for (const u of arr){ try { return await preloadOnce(u); } catch(_){} } return null; }
 
-  (async function initAllNextButtons() {
+  (async function initAllNextButtons(){
     for (const id of Object.keys(CONTENT)) {
       const img = document.getElementById(`main-image-${id}`);
       const btn = document.getElementById(`next-related-${id}`);
@@ -338,28 +310,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!img || !btn || !sourceA) continue;
 
       const items = (RELATED_IMAGES[id] || []);
-      let list = items.map(o => o.src).slice(0, 5);
-      let credit = items.map(o => o.credit || o.src).slice(0, 5);
+      let list = items.map(o => o.src).slice(0,5);
+      let credit = items.map(o => o.credit || o.src).slice(0,5);
 
-      // Fallback to figure.src if list empty
       const initialSrc = CONTENT[id]?.figure?.src || '';
-      if (!list.length && initialSrc) {
-        list = [initialSrc, initialSrc, initialSrc, initialSrc, initialSrc];
-        credit = [initialSrc, initialSrc, initialSrc, initialSrc, initialSrc];
-      }
+      if (!list.length && initialSrc) { list = [initialSrc,initialSrc,initialSrc,initialSrc,initialSrc]; credit = list.slice(); }
       if (!list.length) { list = ['']; credit = ['#','#','#','#','#']; }
 
-      // Choose first that actually loads
       const good = await firstWorking(list);
       img.src = good || list[0];
 
-      let idx = list.findIndex(u => u && img.src.endsWith(u));
-      if (idx < 0) idx = 0;
+      let idx = Math.max(0, list.findIndex(u => u && img.src.endsWith(u)));
       sourceA.href = credit[idx] || '#';
 
-      // Advance helper: preload-next, skip failures, update Source
       const advance = async () => {
-        for (let step = 0; step < list.length; step++) {
+        for (let step=0; step<list.length; step++){
           const nextIdx = (idx + 1) % list.length;
           try {
             const ok = await preloadOnce(list[nextIdx]);
@@ -367,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
             idx = nextIdx;
             sourceA.href = credit[idx] || sourceA.href;
             break;
-          } catch { idx = nextIdx; } // skip broken and continue
+          } catch { idx = nextIdx; }
         }
       };
 
@@ -376,91 +341,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 
-  /* ---------------------------------------------
-   * 3) Backgrounds from JS (no HTML edits needed)
-   * -------------------------------------------*/
+  /* ---------- Backgrounds ---------- */
   const SLIDE_BG = {
-    contents:   { type: 'class', className: 'bg-spotlight' },
-    'what-is':  { type: 'class', className: 'bg-soft-gradient' },
-    sun:        { type: 'class', className: 'bg-grid' },
-    // inner:   { type: 'class', className: 'bg-mesh' },
-    // scope:   { type: 'img',   image: 'assets/bg-space.jpg', dim: 0.56 },
+    contents:{type:'class',className:'bg-spotlight'},
+    'what-is':{type:'class',className:'bg-soft-gradient'},
+    sun:{type:'class',className:'bg-grid'},
+    // inner:{type:'class',className:'bg-mesh'},
   };
-
-  const toDirectDrive = (url) => {
-    const m = url && url.match(/\/d\/([^/]+)\//);
-    return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
+  const toDirectDrive = (url) => { const m = url && url.match(/\/d\/([^/]+)\//); return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url; };
+  const clearBg = (el) => { el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh'); el.style.removeProperty('--bg-image'); el.style.removeProperty('--bg-dim'); };
+  const applyBg = (sec, cfg) => { clearBg(sec); if (!cfg) return;
+    if (cfg.type==='class') sec.classList.add(cfg.className);
+    else if (cfg.type==='img') { sec.classList.add('bg-img'); sec.style.setProperty('--bg-image', `url('${toDirectDrive(cfg.image)}')`); sec.style.setProperty('--bg-dim', String(cfg.dim ?? 0.55)); }
   };
-  const clearBg = (el) => {
-    el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh');
-    el.style.removeProperty('--bg-image');
-    el.style.removeProperty('--bg-dim');
-  };
-  const applyBg = (sec, cfg) => {
-    clearBg(sec);
-    if (!cfg) return;
-    if (cfg.type === 'class' && cfg.className) {
-      sec.classList.add(cfg.className);
-    } else if (cfg.type === 'img' && cfg.image) {
-      sec.classList.add('bg-img');
-      sec.style.setProperty('--bg-image', `url('${toDirectDrive(cfg.image)}')`);
-      sec.style.setProperty('--bg-dim', String(cfg.dim ?? 0.55));
-    }
-  };
-
-  Object.entries(SLIDE_BG).forEach(([id, cfg]) => {
-    const sec = document.getElementById(id);
-    if (sec) applyBg(sec, cfg);
-  });
-
-  // Pleasant default preset for first 3 if none set
+  Object.entries(SLIDE_BG).forEach(([id,cfg]) => { const sec=document.getElementById(id); if (sec) applyBg(sec,cfg); });
   (function presetIfNone(){
     const slides = document.querySelectorAll('main section');
     const hasBg = s => s && (s.className.match(/\bbg-/) || s.classList.contains('bg-img'));
     const first = slides[0], second = slides[1], third = slides[2];
-    if (first  && !hasBg(first))  applyBg(first,  { type:'class', className:'bg-spotlight' });
-    if (second && !hasBg(second)) applyBg(second, { type:'class', className:'bg-soft-gradient' });
-    if (third  && !hasBg(third))  applyBg(third,  { type:'class', className:'bg-grid' });
+    if (first && !hasBg(first)) applyBg(first,{type:'class',className:'bg-spotlight'});
+    if (second && !hasBg(second)) applyBg(second,{type:'class',className:'bg-soft-gradient'});
+    if (third && !hasBg(third)) applyBg(third,{type:'class',className:'bg-grid'});
   })();
 
-  /* ---------------------------------------------
-   * 4) Prev / Next controls + keyboard
-   * -------------------------------------------*/
+  /* ---------- slide controls ---------- */
   const controls = document.createElement('div');
   controls.className = 'slide-controls';
-  controls.innerHTML = `
-    <button type="button" aria-label="Previous slide">‹ Prev</button>
-    <button type="button" aria-label="Next slide">Next ›</button>
-  `;
+  controls.innerHTML = `<button type="button" aria-label="Previous slide">‹ Prev</button><button type="button" aria-label="Next slide">Next ›</button>`;
   document.body.appendChild(controls);
   const [btnPrev, btnNext] = controls.querySelectorAll('button');
-
   const getSections = () => Array.from(document.querySelectorAll('main section'));
-  const goToIndex = (i) => {
-    const s = getSections();
-    if (i >= 0 && i < s.length) s[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  const currentIndex = () => {
-    const s = getSections(), y = window.scrollY + window.innerHeight * 0.35;
-    let idx = 0; for (let i=0;i<s.length;i++){ if (s[i].offsetTop <= y) idx = i; } return idx;
-  };
-
-  btnPrev.addEventListener('click', () => goToIndex(currentIndex() - 1));
-  btnNext.addEventListener('click', () => goToIndex(currentIndex() + 1));
-
-  window.addEventListener('keydown', (e) => {
-    const tag = (e.target && e.target.tagName) || '';
-    if (/(INPUT|TEXTAREA|SELECT)/.test(tag)) return;
-    if (['PageDown','ArrowDown',' '].includes(e.key)) { e.preventDefault(); goToIndex(currentIndex()+1); }
-    else if (['PageUp','ArrowUp'].includes(e.key))     { e.preventDefault(); goToIndex(currentIndex()-1); }
-    else if (e.key === 'Home') { e.preventDefault(); goToIndex(0); }
-    else if (e.key === 'End')  { e.preventDefault(); goToIndex(getSections().length - 1); }
+  const goToIndex = (i) => { const s=getSections(); if (i>=0 && i<s.length) s[i].scrollIntoView({behavior:'smooth',block:'start'}); };
+  const currentIndex = () => { const s=getSections(), y=window.scrollY+window.innerHeight*0.35; let idx=0; for(let i=0;i<s.length;i++){ if(s[i].offsetTop<=y) idx=i; } return idx; };
+  btnPrev.addEventListener('click',()=>goToIndex(currentIndex()-1));
+  btnNext.addEventListener('click',()=>goToIndex(currentIndex()+1));
+  window.addEventListener('keydown',(e)=>{ const tag=(e.target&&e.target.tagName)||''; if(/(INPUT|TEXTAREA|SELECT)/.test(tag)) return;
+    if(['PageDown','ArrowDown',' '].includes(e.key)){ e.preventDefault(); goToIndex(currentIndex()+1); }
+    else if(['PageUp','ArrowUp'].includes(e.key)){ e.preventDefault(); goToIndex(currentIndex()-1); }
+    else if(e.key==='Home'){ e.preventDefault(); goToIndex(0); }
+    else if(e.key==='End'){ e.preventDefault(); goToIndex(getSections().length-1); }
   });
 
-  /* ---------------------------------------------
-   * 5) Reflow after images load (keeps snap smooth)
-   * -------------------------------------------*/
-  window.addEventListener('load', () => {
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
-  });
+  // Smooth snapping polish
+  window.addEventListener('load',()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),60));
 });
