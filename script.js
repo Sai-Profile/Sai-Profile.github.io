@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------------------------------------------
    * 2) Render into existing <section id="...">
+   *    (Tweaked to add a picker container for #rq)
    * -------------------------------------------*/
   const renderSlide = (id, data) => {
     const sec = document.getElementById(id);
@@ -155,11 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.figure?.src) {
       const capText = data.figure.cap ? data.figure.cap : '';
       const capLink = data.figure.link ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>` : '';
+
+      // ADDED: give Slide #rq a stable img id and a related-options container
+      const imgId = (id === 'rq') ? ' id="main-image"' : '';
+      const maybePicker = (id === 'rq')
+        ? `<div id="related-image-options" class="image-options" aria-label="Related images" role="list"></div>`
+        : '';
+
       figure = `
         <figure>
-          <img src="${data.figure.src}" alt="${data.figure.alt || ''}" loading="lazy" />
+          <img${imgId} src="${data.figure.src}" alt="${data.figure.alt || ''}" loading="lazy" />
           <figcaption><span class="figcap-text">${capText}</span><span>${capLink}</span></figcaption>
-        </figure>`;
+        </figure>
+        ${maybePicker}
+      `;
     }
 
     sec.innerHTML = `
@@ -179,6 +189,74 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
+
+  /* ---------------------------------------------
+   * ADDED 2.5) Related image picker (no extra file)
+   * -------------------------------------------*/
+  // Small local catalog. Replace with your own local images if preferred.
+  const RELATED_IMAGES = {
+    hiring: [
+      { src: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=800&q=70', alt: 'Work sample at a desk', caption: 'Work sample test' },
+      { src: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=70', alt: 'Pair programming', caption: 'Hands-on skills check' },
+      { src: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=70', alt: 'Candidate writing assignment', caption: 'Do actual work' },
+      { src: 'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=800&q=70', alt: 'Team reviewing output', caption: 'Evidence of ability' },
+      { src: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=70', alt: 'Interview debrief', caption: 'Actions > resumes' }
+    ]
+  };
+
+  function initRelatedImagePicker() {
+    const mainImg = document.getElementById('main-image');
+    const optionsEl = document.getElementById('related-image-options');
+    if (!mainImg || !optionsEl) return;
+
+    const topic = 'hiring'; // simple topic for this slide; adjust if you add more
+    const MAX_OPTIONS = 5;
+    const images = (RELATED_IMAGES[topic] || []).slice(0, MAX_OPTIONS);
+    if (!images.length) return;
+
+    optionsEl.innerHTML = '';
+    images.forEach((img, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'image-option';
+      btn.setAttribute('role', 'listitem');
+      btn.setAttribute('aria-selected', mainImg.src.endsWith(img.src) ? 'true' : 'false');
+      btn.setAttribute('aria-label', img.alt || img.caption || `related image ${i + 1}`);
+
+      const thumb = document.createElement('img');
+      thumb.src = img.src;
+      thumb.alt = img.alt || img.caption || '';
+
+      btn.appendChild(thumb);
+      btn.addEventListener('click', () => {
+        mainImg.src = img.src;
+        if (img.alt) mainImg.alt = img.alt;
+        // update selected state
+        [...optionsEl.querySelectorAll('.image-option')].forEach(el => el.setAttribute('aria-selected', 'false'));
+        btn.setAttribute('aria-selected', 'true');
+      });
+      optionsEl.appendChild(btn);
+    });
+
+    // Keyboard support (Left/Right/Up/Down to switch)
+    optionsEl.addEventListener('keydown', (e) => {
+      const items = [...optionsEl.querySelectorAll('.image-option')];
+      const current = items.findIndex(el => el.getAttribute('aria-selected') === 'true');
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        const next = items[(current + 1) % items.length];
+        next.click();
+        next.focus();
+        e.preventDefault();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        const prev = items[(current - 1 + items.length) % items.length];
+        prev.click();
+        prev.focus();
+        e.preventDefault();
+      }
+    });
+  }
+
+  // Run after slides render
+  initRelatedImagePicker();
 
   /* ---------------------------------------------
    * 3) Backgrounds from JS (no HTML edits needed)
