@@ -1,9 +1,10 @@
-// Renders slides, backgrounds, nav & controls.
-// NEW: Every slide with a figure gets “Source  Next”; Next cycles 5 images.
-
+// script.js
+// Renders Solar System slides with "Source  Next" per figure (5 images per slide).
 document.addEventListener('DOMContentLoaded', () => {
   /* 0) niceties */
   const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
+
+  // Smooth anchor nav
   document.querySelectorAll('nav a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href').slice(1);
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
       history.replaceState(null, '', `#${id}`);
     });
   });
+
+  // Scroll spy
   const navLinks = Array.from(document.querySelectorAll('nav a[href^="#"]'));
   const sections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
   const linkFor = (id) => navLinks.find(a => a.getAttribute('href') === `#${id}`);
@@ -29,101 +32,221 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { rootMargin: '-35% 0px -60% 0px', threshold: [0, 1] });
   sections.forEach(sec => io.observe(sec));
 
-  /* 1) slide content */
+  /* 1) CONTENT — from your slides */
   const CONTENT = {
-    title: {
-      kicker: 'Slide 1 — Why Recruitment is Crucial',
-      h2: 'Answer to Question 1: Why Recruitment is Important',
-      bulletsTop: [
-        '<strong>Core Statement:</strong> Recruitment is critical because people are the main drivers of business success.'
-      ],
+    "contents": {
+      kicker: "Slide 1 — Contents",
+      h2: "What We’ll Cover: The Solar System Overview",
+      bulletsTop: ["<strong>Key points:</strong>"],
       bullets: [
-        '<strong>Get the Best —</strong> It ensures you find top talent with the right skills. <span class="script-inline">“Hiring is about securing the best skills available to ensure quality work.”</span>',
-        '<strong>Increase Profit —</strong> Better staff means higher productivity and more money. <span class="script-inline">“Good staff directly increase revenue by working smarter and producing more.”</span>',
-        '<strong>Staff Stay Longer —</strong> Finding the right team fit reduces the high cost of staff turnover. <span class="script-inline">“Selecting people who fit the culture saves us money by keeping teams stable.”</span>',
-        '<strong>Grow the Company —</strong> It brings in the skills needed to expand the business into new areas. <span class="script-inline">“Recruitment provides the expertise required to successfully tackle future growth.”</span>'
+        "<strong>What is the Solar System?</strong> — Basic idea and what it includes.",
+        "<strong>The Sun</strong> — Our central star.",
+        "<strong>Inner planets</strong> — Rocky worlds close to the Sun.",
+        "<strong>Outer planets</strong> — Giants farther out.",
+        "<strong>Dwarf planets & small bodies</strong> — Pluto and friends.",
+        "<strong>Orbits & gravity</strong> — What holds it all together.",
+        "<strong>Fun facts & recap</strong> — Cool details and summary."
       ],
-      explain: '<em>Note:</em> The financial impact of a bad vs. good hire is detailed on Slide 3.',
-      figure: {
-        src: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Team planning hiring needs around a table',
-        cap: 'Team planning hiring needs',
-        link: 'https://unsplash.com/photos/3fPXt37X6UQ'
-      }
+      script: "“Here’s what we’ll cover today: from the Sun, to the planets, to the tiny objects that share our Solar System.”",
+      figure: { alt: "Collage of the Sun and major Solar System bodies", cap: "Today’s roadmap: the Solar System at a glance" }
     },
-    problem: {
-      kicker: 'Slide 2 — The Why & How of Hiring 🚀',
-      h2: 'Hiring Right: The Simple Guide',
-      subtitle: 'The Techniques for Getting the Best Staff',
+    "what-is": {
+      kicker: "Slide 2 — What Is the Solar System?",
+      h2: "Definition and Main Members",
       bullets: [
-        '<strong>Importance:</strong> Why good staff are essential for profit and growth.',
-        '<strong>Effectiveness:</strong> Techniques to find people who can do the job well.',
-        '<strong>Efficiency:</strong> Methods to hire the best people quickly and affordably.'
+        "<strong>Definition</strong> — The Solar System is the Sun plus everything that orbits it.",
+        "<strong>Main members</strong> — Planets, dwarf planets, moons, asteroids, comets, and dust.",
+        "<strong>Location</strong> — It sits inside a galaxy called the Milky Way."
       ],
-      explain: 'These three focus areas keep hiring aligned to outcomes: profit & growth, capability, and speed/cost.',
-      figure: {
-        src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Interview panel assessing candidates',
-        cap: 'Interview panel assessing candidates',
-        link: 'https://unsplash.com/photos/cZVthlrnlnQ'
-      }
+      script: "“The Solar System is simply our Sun and all the objects that move around it inside the Milky Way.”",
+      figure: { alt: "Diagram showing the Sun and orbiting planets", cap: "The Solar System and its members" }
     },
-    aim: {
-      kicker: 'Slide 3 — Example: The Simple Truth 💡',
-      h2: 'Quality Over Speed',
+    "sun": {
+      kicker: "Slide 3 — The Sun: Our Star",
+      h2: "Huge, Hot, and the System’s Engine",
       bullets: [
-        '<strong>A great hire is an investment;</strong> a bad hire is a debt.',
-        '<strong>Bad Hire Result:</strong> A quick, poor choice leads to wasted time, bad work, and team stress. <span class="script-inline">“When we rush to hire, the mistakes quickly become expensive.”</span>',
-        '<strong>Good Hire Result:</strong> A smart choice leads to high quality, fast results, and team success. <span class="script-inline">“Taking time to hire the right person ensures a big return on our investment.”</span>',
-        '<strong>Key Takeaway:</strong> Always prioritize quality over speed.'
+        "<strong>Huge and hot</strong> — The Sun is a giant ball of hot gas (plasma).",
+        "<strong>Energy source</strong> — Produces light and heat via nuclear fusion.",
+        "<strong>Center of gravity</strong> — Its gravity keeps all planets in orbit."
       ],
-      figure: {
-        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png',
-        alt: 'Graph icon representing ROI and costs',
-        cap: 'ROI vs cost of hiring decisions',
-        link: 'https://commons.wikimedia.org/wiki/File:Graph_icon.svg'
-      }
+      script: "“The Sun is the powerful star at the center, giving us light, heat, and the gravity that holds everything together.”",
+      figure: { alt: "Close-up of the Sun’s surface and prominences", cap: "Our local star: the Sun" }
     },
-    rq: {
-      kicker: 'Slide 4 — Techniques for Effective Staff (Hiring the Right Person) ✅',
-      h2: 'Evaluate Skills, Evidence, and Fit',
+    "inner": {
+      kicker: "Slide 4 — Inner Rocky Planets",
+      h2: "Mercury, Venus, Earth, and Mars",
       bullets: [
-        'Focus on what they can do and how they fit.',
-        '<strong>Work Test First:</strong> Ask them to do a small task required for the job (e.g., write an email or solve a sample problem). <span class="script-inline">“We test skills directly, because actions speak louder than resumes.”</span>',
-        '<strong>Ask About the Past:</strong> Ask what they actually did in a difficult situation at their last job. <span class="script-inline">“Past behavior is the best predictor of future performance.”</span>',
-        '<strong>Check the Team Fit:</strong> Confirm their working style matches our culture (e.g., Are they collaborative? Are they honest?). <span class="script-inline">“A candidate must be able to thrive and feel comfortable in our specific work environment.”</span>'
+        "<strong>Members</strong> — Mercury, Venus, Earth, and Mars.",
+        "<strong>Rocky worlds</strong> — Solid surfaces of rock and metal.",
+        "<strong>Closer to the Sun</strong> — Smaller and warmer than the outer planets."
       ],
-      explain: 'Use direct work evidence, behavioral detail, and cultural alignment to reduce hiring risk.',
-      figure: {
-        src: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Practical work sample test at a desk',
-        cap: 'Work sample test (evidence of skill)',
-        link: 'https://unsplash.com/photos/7omHUGhhmZ0'
-      }
+      script: "“The four inner planets are small, rocky worlds that orbit close to the Sun.”",
+      figure: { alt: "Montage of the four inner rocky planets", cap: "The inner Solar System" }
     },
-    scope: {
-      kicker: 'Slide 5 — Techniques for Efficient Staff (Hiring Fast & Smart) 💰',
-      h2: 'Be Ready, Leverage Networks, Filter Early',
+    "earth-mars": {
+      kicker: "Slide 5 — A Closer Look at Earth and Mars",
+      h2: "Earth & Mars Highlights",
       bullets: [
-        'Be organized and leverage your current team.',
-        '<strong>Referral Bonus:</strong> Give current employees a reward for recommending people. <span class="script-inline">“Our current great employees know other great people, so we pay them to share.”</span>',
-        '<strong>The Waiting List:</strong> Keep a list of excellent candidates we liked but didn\'t hire right away. <span class="script-inline">“When a new role opens, we check our waiting list first to save weeks of searching.”</span>',
-        '<strong>Clear Job Ad:</strong> Write a very clear job description that immediately filters out unqualified applicants. <span class="script-inline">“A good job ad acts like a filter, ensuring only relevant people apply.”</span>'
+        "<strong>Earth</strong> — Our home planet with liquid water and life.",
+        "<strong>Protective atmosphere</strong> — Helps keep temperatures stable.",
+        "<strong>Mars</strong> — Cold, dry, explored by robots and rovers."
       ],
-      explain: 'Referrals, warm pipelines, and sharp job ads cut time-to-hire while protecting quality.',
-      figure: {
-        src: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Colleagues sharing referrals',
-        cap: 'Referrals and talent networks accelerate hiring',
-        link: 'https://unsplash.com/photos/6U5AEmQIajg'
-      }
+      script: "“Earth is the only known planet with life, and Mars is our main target for future exploration.”",
+      figure: { alt: "Earth and Mars side-by-side comparison", cap: "Earth vs. Mars" }
+    },
+    "gas-giants": {
+      kicker: "Slide 6 — The Gas Giants: Jupiter and Saturn",
+      h2: "Jupiter & Saturn",
+      bullets: [
+        "<strong>Very large planets</strong> — Mostly hydrogen and helium.",
+        "<strong>Thick atmospheres</strong> — No solid surface like Earth.",
+        "<strong>Rings and moons</strong> — Saturn’s rings; both have many moons."
+      ],
+      script: "“Jupiter and Saturn are huge gas giants with thick atmospheres, many moons, and in Saturn’s case, beautiful rings.”",
+      figure: { alt: "Jupiter and Saturn with visible bands and rings", cap: "The gas giants" }
+    },
+    "ice-giants": {
+      kicker: "Slide 7 — The Ice Giants: Uranus and Neptune",
+      h2: "Uranus & Neptune",
+      bullets: [
+        "<strong>Colder and farther</strong> — Orbit much farther from the Sun.",
+        "<strong>Icy mix</strong> — Hydrogen, helium, and ‘ices’ like water, methane, ammonia.",
+        "<strong>Unique features</strong> — Uranus tilts on its side; Neptune has strong winds."
+      ],
+      script: "“Uranus and Neptune are distant, icy giants with strange tilts, strong winds, and very cold temperatures.”",
+      figure: { alt: "Uranus and Neptune in deep blue hues", cap: "The ice giants" }
+    },
+    "dwarf-kuiper": {
+      kicker: "Slide 8 — Dwarf Planets and the Kuiper Belt",
+      h2: "Pluto and Beyond",
+      bullets: [
+        "<strong>Dwarf planets</strong> — Smaller worlds like Pluto, Eris, Ceres.",
+        "<strong>Kuiper Belt</strong> — Beyond Neptune, full of icy bodies.",
+        "<strong>Not full planets</strong> — Round but share orbits with other objects."
+      ],
+      script: "“Beyond Neptune lies the Kuiper Belt, home to Pluto and many other small, icy dwarf planets.”",
+      figure: { alt: "New Horizons image of Pluto / Kuiper Belt artist impression", cap: "Dwarf planets and the Kuiper Belt" }
+    },
+    "small-bodies": {
+      kicker: "Slide 9 — Asteroids, Comets, and Other Small Bodies",
+      h2: "Rocks, Ice, and Shooting Stars",
+      bullets: [
+        "<strong>Asteroids</strong> — Rocky objects; many in the asteroid belt.",
+        "<strong>Comets</strong> — Icy bodies with bright tails near the Sun.",
+        "<strong>Meteoroids</strong> — Small rocks that create meteors (shooting stars)."
+      ],
+      script: "“The Solar System is also filled with smaller visitors like asteroids, comets, and the meteors we see as shooting stars.”",
+      figure: { alt: "Asteroid close-up, comet with tail, and meteor shower", cap: "Small bodies of the Solar System" }
+    },
+    "orbits": {
+      kicker: "Slide 10 — Orbits and Gravity",
+      h2: "Gravity, Ellipses, and Motion",
+      bullets: [
+        "<strong>Gravity rules</strong> — The Sun’s gravity pulls planets into orbits.",
+        "<strong>Elliptical orbits</strong> — Slightly oval, not perfect circles.",
+        "<strong>Balance</strong> — Forward motion + gravity = stable paths."
+      ],
+      script: "“Gravity pulls the planets toward the Sun while their motion carries them forward, creating stable orbits.”",
+      figure: { alt: "Diagram of elliptical orbit around the Sun", cap: "How orbits work" }
+    },
+    "recap": {
+      kicker: "Slide 11 — Fun Facts and Recap",
+      h2: "Quick Facts & Wrap-Up",
+      bullets: [
+        "<strong>Size difference</strong> — The Sun holds almost all the mass.",
+        "<strong>Distances</strong> — Light takes ~8 minutes Sun→Earth.",
+        "<strong>Quick recap</strong> — Sun, planets, dwarf planets, and smaller objects."
+      ],
+      script: "“To recap, our Solar System is a huge family of worlds, all held together by the Sun’s gravity and energy.”",
+      figure: { alt: "Scale illustration of Sun vs planets", cap: "Recap: our Solar System family" }
     }
   };
 
-  /* 2) render slides (add Source + Next for ANY figure) */
+  /* 2) RELATED IMAGES — 5 per slide (royalty-free sources) */
+  const RI = (urls) => urls.slice(0,5).length < 5 ? [...urls, ...Array(5-urls.length).fill(urls[0]||'')] : urls.slice(0,5);
+  const RELATED_IMAGES = {
+    "contents": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_sys8.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_system_scale.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/f/f9/Solar_system_true_color.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/2e/Planets2013.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/6/64/Planets_and_dwarf_planets_of_the_Solar_System.png"
+    ]),
+    "what-is": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/6/6f/PIA03153_InnerSolarSystem.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_system_scale.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/2e/Planets2013.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/5f/Solar_System_size_to_scale.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/00/Solar_System_Outer_Planets.jpg"
+    ]),
+    "sun": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_prominence_2010-08-01.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/4/4c/Sun_white.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/02/Sun_in_true_color.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/56/Granulation_on_the_solar_surface.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/a/a9/Solar_corona_eclipse_2017.jpg"
+    ]),
+    "inner": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/3/3f/Terrestrial_planet_sizes2.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/02/InnerPlanets2008.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/8/85/Mercury_in_true_color.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg"
+    ]),
+    "earth-mars": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/29/PIA23764-MarsInSight-Lander-20190530.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/56/Mars_Rover_Curiosity.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/02/Mars_atmosphere.jpg"
+    ]),
+    "gas-giants": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/f/f7/Jupiter_Great_Red_Spot.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/9/9a/Saturn%2C_Earth-size_compared.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/3/3d/Saturn_Rings_Cassini_2007.jpg"
+    ]),
+    "ice-giants": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/56/Neptune_Full.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/6/68/Uranus_and_rings.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/20/Neptune_clouds.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/6/6f/Color_Neptune.jpg"
+    ]),
+    "dwarf-kuiper": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/2/2a/Nh-pluto-in-true-color_2x_JPEG-edit-frame.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/9/9b/Ceres_Dawn_RC3_image_colorized.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/8/81/Eris_and_dysnomia2.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/1/1d/Kuiper_belt_plot_objects.png",
+      "https://upload.wikimedia.org/wikipedia/commons/6/64/Pluto-01_Stern_03_Pluto_Color_TXT.jpg"
+    ]),
+    "small-bodies": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/5/58/Comet_67P_Churyumov-Gerasimenko.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/8/8d/Vesta_full_mosaic.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/56/Hale-Bopp_1995O1.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/2c/Perseid_meteor_shower.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/4/4a/Asteroid_Bennu_NASA_OSIRIS-REx.png"
+    ]),
+    "orbits": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/1/1a/Orbit1.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/8/8a/Ellipse-def.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/0d/Kepler-second-law.gif",
+      "https://upload.wikimedia.org/wikipedia/commons/3/3b/Newton%27s_cannon.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/8/86/Titius-Bode_law_orbits.svg"
+    ]),
+    "recap": RI([
+      "https://upload.wikimedia.org/wikipedia/commons/5/5a/Solar_System_size_to_scale.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_system_scale.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/6/64/Planets_and_dwarf_planets_of_the_Solar_System.png",
+      "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_sys8.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/f/f9/Solar_system_true_color.jpg"
+    ])
+  };
+
+  /* 3) render slides (figures get Source + Next) */
   const renderSlide = (id, data) => {
-    const sec = document.getElementById(id);
-    if (!sec || !data) return;
+    const sec = document.getElementById(id); if (!sec || !data) return;
 
     const kicker = data.kicker ? `<div class="kicker">${data.kicker}</div>` : '';
     const subtitle = data.subtitle ? `<p class="subtitle">${data.subtitle}</p>` : '';
@@ -132,19 +255,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const explain = data.explain ? `<div class="explain">${data.explain}</div>` : '';
     const script = data.script ? `<p class="script">${data.script}</p>` : '';
 
+    // ensure initial figure src: use provided or first related image
     let figure = '';
-    if (data.figure?.src) {
+    if (data.figure) {
       const imgId = `main-image-${id}`;
       const btnId = `next-related-${id}`;
+      const options = (RELATED_IMAGES[id] || []).slice(0,5);
+      const initialSrc = data.figure.src || options[0] || '';
       const capText = data.figure.cap || '';
-      const capLink = data.figure.link
-        ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>`
-        : '';
+      const capLink = data.figure.link ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>` : '<span>Source</span>';
       const actions = `${capLink} <button type="button" class="fig-next-btn" id="${btnId}">Next</button>`;
 
       figure = `
         <figure>
-          <img id="${imgId}" src="${data.figure.src}" alt="${data.figure.alt || ''}" loading="lazy" />
+          <img id="${imgId}" src="${initialSrc}" alt="${data.figure.alt || ''}" loading="lazy" />
           <figcaption>
             <span class="figcap-text">${capText}</span>
             <span>${actions}</span>
@@ -167,113 +291,80 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
   };
+
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
 
-  /* 2.5) Five images per slide + Next logic
-     - Change these URLs to your local /images/... files if you prefer.
-     - If any slide has < 5 defined, the code pads from its figure.src to reach 5. */
-  const RELATED_IMAGES = {
-    title: [
-      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80'
-    ],
-    problem: [
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1584697964192-30a1b36f1f1d?auto=format&fit=crop&w=1200&q=80'
-    ],
-    aim: [
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png',
-      'https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1487611459768-bd414656ea10?auto=format&fit=crop&w=1200&q=80'
-    ],
-    rq: [
-      'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80'
-    ],
-    scope: [
-      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80'
-    ]
-  };
-
-  function initNextButtonsForAllSlides() {
+  /* 4) Next logic for ALL slides with figures (exactly 5 images, wrap) */
+  (function initAllNextButtons(){
     Object.keys(CONTENT).forEach((id) => {
       const img = document.getElementById(`main-image-${id}`);
       const btn = document.getElementById(`next-related-${id}`);
       if (!img || !btn) return;
+      let list = (RELATED_IMAGES[id] || []).slice(0,5);
+      if (!list.length) list = [img.src];
+      while (list.length < 5) list.push(list[0]);
 
-      // Ensure exactly 5 options per slide
-      const base = CONTENT[id]?.figure?.src ? [CONTENT[id].figure.src] : [];
-      let list = (RELATED_IMAGES[id] && RELATED_IMAGES[id].length ? RELATED_IMAGES[id] : base).slice(0, 5);
-
-      // If fewer than 5 provided, pad by repeating from the start (keeps it simple)
-      while (list.length < 5 && base.length) list.push(base[0]);
-      while (list.length < 5) list.push(img.src); // ultimate fallback
-
-      let idx = list.findIndex(u => img.src.endsWith(u));
-      if (idx < 0) idx = 0;
-
-      btn.addEventListener('click', () => {
-        idx = (idx + 1) % list.length;
-        img.src = list[idx];
-      });
+      let idx = list.findIndex(u => img.src.endsWith(u)); if (idx < 0) idx = 0;
+      btn.addEventListener('click', () => { idx = (idx + 1) % list.length; img.src = list[idx]; });
     });
-  }
-  initNextButtonsForAllSlides();
+  })();
 
-  /* 3) backgrounds */
+  /* 5) Backgrounds (pleasant defaults) */
   const SLIDE_BG = {
-    title:{type:'class',className:'bg-spotlight'},
-    problem:{type:'class',className:'bg-soft-gradient'},
-    aim:{type:'class',className:'bg-grid'},
-    // rq:{type:'class',className:'bg-mesh'},
-    // scope:{type:'img',image:'assets/bg-team.jpg',dim:.56},
+    contents:   { type: 'class', className: 'bg-spotlight' },
+    "what-is":  { type: 'class', className: 'bg-soft-gradient' },
+    sun:        { type: 'class', className: 'bg-grid' },
+    // inner:   { type: 'class', className: 'bg-mesh' },
+    // scope:   { type: 'img',   image: 'assets/bg-space.jpg', dim: 0.56 },
   };
   const toDirectDrive = (url) => { const m = url && url.match(/\/d\/([^/]+)\//); return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url; };
   const clearBg = (el) => { el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh'); el.style.removeProperty('--bg-image'); el.style.removeProperty('--bg-dim'); };
-  const applyBg = (sec, cfg) => { clearBg(sec); if (!cfg) return; if (cfg.type==='class') sec.classList.add(cfg.className); else if (cfg.type==='img') { sec.classList.add('bg-img'); sec.style.setProperty('--bg-image', `url('${toDirectDrive(cfg.image)}')`); sec.style.setProperty('--bg-dim', String(cfg.dim ?? 0.55)); } };
-  Object.entries(SLIDE_BG).forEach(([id,cfg])=>{const sec=document.getElementById(id); if(sec) applyBg(sec,cfg);});
+  const applyBg = (sec, cfg) => {
+    clearBg(sec); if (!cfg) return;
+    if (cfg.type === 'class' && cfg.className) { sec.classList.add(cfg.className); }
+    else if (cfg.type === 'img' && cfg.image) {
+      sec.classList.add('bg-img');
+      sec.style.setProperty('--bg-image', `url('${toDirectDrive(cfg.image)}')`);
+      sec.style.setProperty('--bg-dim', String(cfg.dim ?? 0.55));
+    }
+  };
+  Object.entries(SLIDE_BG).forEach(([id, cfg]) => { const sec = document.getElementById(id); if (sec) applyBg(sec, cfg); });
+  // Ensure first 3 slides have a background if none applied
   (function presetIfNone(){
     const slides = document.querySelectorAll('main section');
     const hasBg = s => s && (s.className.match(/\bbg-/) || s.classList.contains('bg-img'));
     const first = slides[0], second = slides[1], third = slides[2];
-    if (first && !hasBg(first)) applyBg(first,{type:'class',className:'bg-spotlight'});
-    if (second && !hasBg(second)) applyBg(second,{type:'class',className:'bg-soft-gradient'});
-    if (third && !hasBg(third)) applyBg(third,{type:'class',className:'bg-grid'});
+    if (first  && !hasBg(first))  applyBg(first,  { type:'class', className:'bg-spotlight' });
+    if (second && !hasBg(second)) applyBg(second, { type:'class', className:'bg-soft-gradient' });
+    if (third  && !hasBg(third))  applyBg(third,  { type:'class', className:'bg-grid' });
   })();
 
-  /* 4) slide controls */
+  /* 6) Prev / Next slide controls + keyboard */
   const controls = document.createElement('div');
   controls.className = 'slide-controls';
-  controls.innerHTML = `<button type="button" aria-label="Previous slide">‹ Prev</button><button type="button" aria-label="Next slide">Next ›</button>`;
+  controls.innerHTML = `
+    <button type="button" aria-label="Previous slide">‹ Prev</button>
+    <button type="button" aria-label="Next slide">Next ›</button>
+  `;
   document.body.appendChild(controls);
   const [btnPrev, btnNext] = controls.querySelectorAll('button');
+
   const getSections = () => Array.from(document.querySelectorAll('main section'));
-  const goToIndex = (i) => { const s = getSections(); if (i>=0 && i<s.length) s[i].scrollIntoView({behavior:'smooth',block:'start'}); };
-  const currentIndex = () => { const s=getSections(), y=window.scrollY+window.innerHeight*0.35; let idx=0; for(let i=0;i<s.length;i++){ if(s[i].offsetTop<=y) idx=i; } return idx; };
-  btnPrev.addEventListener('click',()=>goToIndex(currentIndex()-1));
-  btnNext.addEventListener('click',()=>goToIndex(currentIndex()+1));
-  window.addEventListener('keydown',(e)=>{ const tag=(e.target&&e.target.tagName)||''; if(/(INPUT|TEXTAREA|SELECT)/.test(tag)) return;
-    if(['PageDown','ArrowDown',' '].includes(e.key)){e.preventDefault();goToIndex(currentIndex()+1);}
-    else if(['PageUp','ArrowUp'].includes(e.key)){e.preventDefault();goToIndex(currentIndex()-1);}
-    else if(e.key==='Home'){e.preventDefault();goToIndex(0);}
-    else if(e.key==='End'){e.preventDefault();goToIndex(getSections().length-1);}
+  const goToIndex = (i) => { const s = getSections(); if (i >= 0 && i < s.length) s[i].scrollIntoView({ behavior:'smooth', block:'start' }); };
+  const currentIndex = () => { const s=getSections(), y=window.scrollY + window.innerHeight*0.35; let idx=0; for(let i=0;i<s.length;i++){ if (s[i].offsetTop <= y) idx=i; } return idx; };
+
+  btnPrev.addEventListener('click', () => goToIndex(currentIndex() - 1));
+  btnNext.addEventListener('click', () => goToIndex(currentIndex() + 1));
+
+  window.addEventListener('keydown', (e) => {
+    const tag = (e.target && e.target.tagName) || '';
+    if (/(INPUT|TEXTAREA|SELECT)/.test(tag)) return;
+    if (['PageDown','ArrowDown',' '].includes(e.key)) { e.preventDefault(); goToIndex(currentIndex()+1); }
+    else if (['PageUp','ArrowUp'].includes(e.key))     { e.preventDefault(); goToIndex(currentIndex()-1); }
+    else if (e.key === 'Home') { e.preventDefault(); goToIndex(0); }
+    else if (e.key === 'End')  { e.preventDefault(); goToIndex(getSections().length - 1); }
   });
 
-  /* 5) reflow */
-  window.addEventListener('load',()=>{setTimeout(()=>window.dispatchEvent(new Event('resize')),50);});
+  // Reflow once images load (for smooth snapping)
+  window.addEventListener('load', () => setTimeout(() => window.dispatchEvent(new Event('resize')), 60));
 });
