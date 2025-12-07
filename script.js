@@ -1,5 +1,5 @@
 // script.js
-// Renders Solar System slides with "Source  Next" per figure (5 images per slide).
+// Solar System deck with "Source  Next" per figure (5 images per slide) and robust image failover.
 document.addEventListener('DOMContentLoaded', () => {
   /* 0) niceties */
   const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
@@ -162,29 +162,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  /* 2) RELATED IMAGES — 5 per slide (royalty-free sources) */
-  const RI = (urls) => urls.slice(0,5).length < 5 ? [...urls, ...Array(5-urls.length).fill(urls[0]||'')] : urls.slice(0,5);
+  /* 2) RELATED IMAGES — 5 per slide (royalty-free sources). Prefer JPG/PNG for reliability. */
+  const RI = (urls) => {
+    const arr = urls.filter(Boolean).slice(0,5);
+    while (arr.length && arr.length < 5) arr.push(arr[0]);
+    return arr;
+  };
+
   const RELATED_IMAGES = {
     "contents": RI([
       "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_sys8.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_system_scale.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/f/f9/Solar_system_true_color.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/2/2e/Planets2013.svg",
-      "https://upload.wikimedia.org/wikipedia/commons/6/64/Planets_and_dwarf_planets_of_the_Solar_System.png"
+      "https://upload.wikimedia.org/wikipedia/commons/6/64/Planets_and_dwarf_planets_of_the_Solar_System.png",
+      "https://upload.wikimedia.org/wikipedia/commons/0/00/Solar_System_Outer_Planets.jpg"
     ]),
     "what-is": RI([
       "https://upload.wikimedia.org/wikipedia/commons/6/6f/PIA03153_InnerSolarSystem.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_system_scale.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/2/2e/Planets2013.svg",
-      "https://upload.wikimedia.org/wikipedia/commons/5/5f/Solar_System_size_to_scale.svg",
-      "https://upload.wikimedia.org/wikipedia/commons/0/00/Solar_System_Outer_Planets.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/5/5f/Solar_System_size_to_scale.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/0/00/Solar_System_Outer_Planets.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/2e/Planets2013.svg.png"
     ]),
     "sun": RI([
       "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_prominence_2010-08-01.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/4/4c/Sun_white.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/0/02/Sun_in_true_color.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/5/56/Granulation_on_the_solar_surface.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/a/a9/Solar_corona_eclipse_2017.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/a/a9/Solar_corona_eclipse_2017.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/4/4c/Sun_white.jpg"
     ]),
     "inner": RI([
       "https://upload.wikimedia.org/wikipedia/commons/3/3f/Terrestrial_planet_sizes2.jpg",
@@ -204,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
       "https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/f/f7/Jupiter_Great_Red_Spot.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/9/9a/Saturn%2C_Earth-size_compared.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/3/3d/Saturn_Rings_Cassini_2007.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/3/3d/Saturn_Rings_Cassini_2007.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/9/9a/Saturn%2C_Earth-size_compared.jpg"
     ]),
     "ice-giants": RI([
       "https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg",
@@ -229,14 +234,14 @@ document.addEventListener('DOMContentLoaded', () => {
       "https://upload.wikimedia.org/wikipedia/commons/4/4a/Asteroid_Bennu_NASA_OSIRIS-REx.png"
     ]),
     "orbits": RI([
-      "https://upload.wikimedia.org/wikipedia/commons/1/1a/Orbit1.svg",
-      "https://upload.wikimedia.org/wikipedia/commons/8/8a/Ellipse-def.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/1/1a/Orbit1.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/8/8a/Ellipse-def.svg.png",
       "https://upload.wikimedia.org/wikipedia/commons/0/0d/Kepler-second-law.gif",
-      "https://upload.wikimedia.org/wikipedia/commons/3/3b/Newton%27s_cannon.svg",
-      "https://upload.wikimedia.org/wikipedia/commons/8/86/Titius-Bode_law_orbits.svg"
+      "https://upload.wikimedia.org/wikipedia/commons/3/3b/Newton%27s_cannon.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/8/86/Titius-Bode_law_orbits.svg.png"
     ]),
     "recap": RI([
-      "https://upload.wikimedia.org/wikipedia/commons/5/5a/Solar_System_size_to_scale.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/5a/Solar_System_size_to_scale.svg.png",
       "https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_system_scale.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/6/64/Planets_and_dwarf_planets_of_the_Solar_System.png",
       "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_sys8.jpg",
@@ -244,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ])
   };
 
-  /* 3) render slides (figures get Source + Next) */
+  /* 3) render slides (figures get Source + Next + robust loading) */
   const renderSlide = (id, data) => {
     const sec = document.getElementById(id); if (!sec || !data) return;
 
@@ -255,20 +260,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const explain = data.explain ? `<div class="explain">${data.explain}</div>` : '';
     const script = data.script ? `<p class="script">${data.script}</p>` : '';
 
-    // ensure initial figure src: use provided or first related image
     let figure = '';
     if (data.figure) {
       const imgId = `main-image-${id}`;
       const btnId = `next-related-${id}`;
-      const options = (RELATED_IMAGES[id] || []).slice(0,5);
-      const initialSrc = data.figure.src || options[0] || '';
       const capText = data.figure.cap || '';
-      const capLink = data.figure.link ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>` : '<span>Source</span>';
+      const capLink = data.figure.link
+        ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>`
+        : '<span>Source</span>';
       const actions = `${capLink} <button type="button" class="fig-next-btn" id="${btnId}">Next</button>`;
 
       figure = `
         <figure>
-          <img id="${imgId}" src="${initialSrc}" alt="${data.figure.alt || ''}" loading="lazy" />
+          <img id="${imgId}" src="" alt="${data.figure.alt || ''}" loading="lazy" referrerpolicy="no-referrer" />
           <figcaption>
             <span class="figcap-text">${capText}</span>
             <span>${actions}</span>
@@ -291,31 +295,81 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
   };
-
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
 
-  /* 4) Next logic for ALL slides with figures (exactly 5 images, wrap) */
-  (function initAllNextButtons(){
-    Object.keys(CONTENT).forEach((id) => {
+  /* 4) Image utilities: preload + failover to next */
+  function preloadOnce(url) {
+    return new Promise((resolve, reject) => {
+      if (!url) return reject(new Error('empty-url'));
+      const probe = new Image();
+      probe.referrerPolicy = 'no-referrer';
+      probe.onload = () => resolve(url);
+      probe.onerror = () => reject(new Error('load-failed'));
+      probe.src = url;
+    });
+  }
+  async function firstWorking(urls) {
+    for (const u of urls) {
+      try { const ok = await preloadOnce(u); return ok; } catch (_) {}
+    }
+    return null;
+  }
+
+  /* 5) Next logic for ALL slides with figures (exactly 5 images, wrap, with error recovery) */
+  (async function initAllNextButtons(){
+    for (const id of Object.keys(CONTENT)) {
       const img = document.getElementById(`main-image-${id}`);
       const btn = document.getElementById(`next-related-${id}`);
-      if (!img || !btn) return;
-      let list = (RELATED_IMAGES[id] || []).slice(0,5);
-      if (!list.length) list = [img.src];
-      while (list.length < 5) list.push(list[0]);
+      if (!img || !btn) continue;
 
-      let idx = list.findIndex(u => img.src.endsWith(u)); if (idx < 0) idx = 0;
-      btn.addEventListener('click', () => { idx = (idx + 1) % list.length; img.src = list[idx]; });
-    });
+      // Build list: prefer RELATED_IMAGES; pad to 5 (function RI already pads if possible)
+      let list = (RELATED_IMAGES[id] || []).slice(0, 5);
+      // If still empty, try figure.src as last resort
+      const initialSrc = CONTENT[id]?.figure?.src || '';
+      if (!list.length && initialSrc) list = RI([initialSrc]);
+      if (!list.length) list = [""]; // absolute fallback to avoid errors
+
+      // Choose the first that actually loads
+      const good = await firstWorking(list);
+      img.src = good || list[0];
+
+      // Maintain index aligned to current src
+      let idx = list.findIndex(u => u && img.src.endsWith(u));
+      if (idx < 0) idx = 0;
+
+      // Click handler with preload & skip broken
+      btn.addEventListener('click', async () => {
+        for (let step = 0; step < list.length; step++) {
+          const nextIdx = (idx + 1) % list.length;
+          try {
+            const ok = await preloadOnce(list[nextIdx]);
+            img.src = ok;
+            idx = nextIdx;
+            break;
+          } catch { idx = nextIdx; }
+        }
+      });
+
+      // Auto-advance on runtime error
+      img.addEventListener('error', async () => {
+        for (let step = 0; step < list.length; step++) {
+          const nextIdx = (idx + 1) % list.length;
+          try {
+            const ok = await preloadOnce(list[nextIdx]);
+            img.src = ok;
+            idx = nextIdx;
+            break;
+          } catch { idx = nextIdx; }
+        }
+      });
+    }
   })();
 
-  /* 5) Backgrounds (pleasant defaults) */
+  /* 6) Backgrounds (pleasant defaults) */
   const SLIDE_BG = {
     contents:   { type: 'class', className: 'bg-spotlight' },
     "what-is":  { type: 'class', className: 'bg-soft-gradient' },
     sun:        { type: 'class', className: 'bg-grid' },
-    // inner:   { type: 'class', className: 'bg-mesh' },
-    // scope:   { type: 'img',   image: 'assets/bg-space.jpg', dim: 0.56 },
   };
   const toDirectDrive = (url) => { const m = url && url.match(/\/d\/([^/]+)\//); return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url; };
   const clearBg = (el) => { el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh'); el.style.removeProperty('--bg-image'); el.style.removeProperty('--bg-dim'); };
@@ -339,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (third  && !hasBg(third))  applyBg(third,  { type:'class', className:'bg-grid' });
   })();
 
-  /* 6) Prev / Next slide controls + keyboard */
+  /* 7) Prev / Next slide controls + keyboard */
   const controls = document.createElement('div');
   controls.className = 'slide-controls';
   controls.innerHTML = `
