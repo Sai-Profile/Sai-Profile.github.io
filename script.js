@@ -1,15 +1,9 @@
-// script.js
 // Renders slides, backgrounds, nav & controls.
-// NEW: Every slide figure shows “Source  Next”; Next cycles ~5 images.
+// NEW: Every slide with a figure gets “Source  Next”; Next cycles 5 images.
 
 document.addEventListener('DOMContentLoaded', () => {
-  /* ---------------------------------------------
-   * 0) Small niceties
-   * -------------------------------------------*/
-  const year = document.getElementById('year');
-  if (year) year.textContent = new Date().getFullYear();
-
-  // Smooth anchor nav
+  /* 0) niceties */
+  const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
   document.querySelectorAll('nav a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href').slice(1);
@@ -20,8 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
       history.replaceState(null, '', `#${id}`);
     });
   });
-
-  // Scroll spy
   const navLinks = Array.from(document.querySelectorAll('nav a[href^="#"]'));
   const sections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
   const linkFor = (id) => navLinks.find(a => a.getAttribute('href') === `#${id}`);
@@ -37,9 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { rootMargin: '-35% 0px -60% 0px', threshold: [0, 1] });
   sections.forEach(sec => io.observe(sec));
 
-  /* ---------------------------------------------
-   * 1) Slide content
-   * -------------------------------------------*/
+  /* 1) slide content */
   const CONTENT = {
     title: {
       kicker: 'Slide 1 — Why Recruitment is Crucial',
@@ -61,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
         link: 'https://unsplash.com/photos/3fPXt37X6UQ'
       }
     },
-
     problem: {
       kicker: 'Slide 2 — The Why & How of Hiring 🚀',
       h2: 'Hiring Right: The Simple Guide',
@@ -79,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         link: 'https://unsplash.com/photos/cZVthlrnlnQ'
       }
     },
-
     aim: {
       kicker: 'Slide 3 — Example: The Simple Truth 💡',
       h2: 'Quality Over Speed',
@@ -96,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
         link: 'https://commons.wikimedia.org/wiki/File:Graph_icon.svg'
       }
     },
-
     rq: {
       kicker: 'Slide 4 — Techniques for Effective Staff (Hiring the Right Person) ✅',
       h2: 'Evaluate Skills, Evidence, and Fit',
@@ -114,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         link: 'https://unsplash.com/photos/7omHUGhhmZ0'
       }
     },
-
     scope: {
       kicker: 'Slide 5 — Techniques for Efficient Staff (Hiring Fast & Smart) 💰',
       h2: 'Be Ready, Leverage Networks, Filter Early',
@@ -134,9 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  /* ---------------------------------------------
-   * 2) Render slides (adds “Next” beside Source for ALL figures)
-   * -------------------------------------------*/
+  /* 2) render slides (add Source + Next for ANY figure) */
   const renderSlide = (id, data) => {
     const sec = document.getElementById(id);
     if (!sec || !data) return;
@@ -150,10 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let figure = '';
     if (data.figure?.src) {
-      const capText = data.figure.cap ? data.figure.cap : '';
-      const capLink = data.figure.link ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>` : '';
       const imgId = `main-image-${id}`;
       const btnId = `next-related-${id}`;
+      const capText = data.figure.cap || '';
+      const capLink = data.figure.link
+        ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>`
+        : '';
       const actions = `${capLink} <button type="button" class="fig-next-btn" id="${btnId}">Next</button>`;
 
       figure = `
@@ -181,13 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
   };
-
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
 
-  /* ---------------------------------------------
-   * 2.5) Related images per slide (5 options each)
-   *  - Replace with local /images/... paths if you prefer offline
-   * -------------------------------------------*/
+  /* 2.5) Five images per slide + Next logic
+     - Change these URLs to your local /images/... files if you prefer.
+     - If any slide has < 5 defined, the code pads from its figure.src to reach 5. */
   const RELATED_IMAGES = {
     title: [
       'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
@@ -198,10 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ],
     problem: [
       'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1529336953121-ad522f1e1f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1584697964192-30a1b36f1f1d?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80'
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1584697964192-30a1b36f1f1d?auto=format&fit=crop&w=1200&q=80'
     ],
     aim: [
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png',
@@ -226,16 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  // Initialize the Next buttons for ALL slides that have figures
-  (function initAllNextButtons() {
+  function initNextButtonsForAllSlides() {
     Object.keys(CONTENT).forEach((id) => {
       const img = document.getElementById(`main-image-${id}`);
       const btn = document.getElementById(`next-related-${id}`);
       if (!img || !btn) return;
 
-      // Fallback to the slide's own figure src if no list provided
+      // Ensure exactly 5 options per slide
       const base = CONTENT[id]?.figure?.src ? [CONTENT[id].figure.src] : [];
-      const list = (RELATED_IMAGES[id] && RELATED_IMAGES[id].length ? RELATED_IMAGES[id] : base).slice(0, 5);
+      let list = (RELATED_IMAGES[id] && RELATED_IMAGES[id].length ? RELATED_IMAGES[id] : base).slice(0, 5);
+
+      // If fewer than 5 provided, pad by repeating from the start (keeps it simple)
+      while (list.length < 5 && base.length) list.push(base[0]);
+      while (list.length < 5) list.push(img.src); // ultimate fallback
 
       let idx = list.findIndex(u => img.src.endsWith(u));
       if (idx < 0) idx = 0;
@@ -245,93 +232,48 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = list[idx];
       });
     });
-  })();
+  }
+  initNextButtonsForAllSlides();
 
-  /* ---------------------------------------------
-   * 3) Backgrounds from JS
-   * -------------------------------------------*/
+  /* 3) backgrounds */
   const SLIDE_BG = {
-    title:   { type: 'class', className: 'bg-spotlight' },
-    problem: { type: 'class', className: 'bg-soft-gradient' },
-    aim:     { type: 'class', className: 'bg-grid' },
-    // rq:    { type: 'class', className: 'bg-mesh' },
-    // scope: { type: 'img',   image: 'assets/bg-team.jpg', dim: 0.56 },
+    title:{type:'class',className:'bg-spotlight'},
+    problem:{type:'class',className:'bg-soft-gradient'},
+    aim:{type:'class',className:'bg-grid'},
+    // rq:{type:'class',className:'bg-mesh'},
+    // scope:{type:'img',image:'assets/bg-team.jpg',dim:.56},
   };
-
-  const toDirectDrive = (url) => {
-    const m = url && url.match(/\/d\/([^/]+)\//);
-    return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
-  };
-  const clearBg = (el) => {
-    el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh');
-    el.style.removeProperty('--bg-image');
-    el.style.removeProperty('--bg-dim');
-  };
-  const applyBg = (sec, cfg) => {
-    clearBg(sec);
-    if (!cfg) return;
-    if (cfg.type === 'class' && cfg.className) {
-      sec.classList.add(cfg.className);
-    } else if (cfg.type === 'img' && cfg.image) {
-      sec.classList.add('bg-img');
-      sec.style.setProperty('--bg-image', `url('${toDirectDrive(cfg.image)}')`);
-      sec.style.setProperty('--bg-dim', String(cfg.dim ?? 0.55));
-    }
-  };
-
-  Object.entries(SLIDE_BG).forEach(([id, cfg]) => {
-    const sec = document.getElementById(id);
-    if (sec) applyBg(sec, cfg);
-  });
-
-  // Pleasant default preset for first 3 if none set
+  const toDirectDrive = (url) => { const m = url && url.match(/\/d\/([^/]+)\//); return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url; };
+  const clearBg = (el) => { el.classList.remove('bg-img','bg-solid','bg-soft-gradient','bg-grain','bg-grid','bg-spotlight','bg-mesh'); el.style.removeProperty('--bg-image'); el.style.removeProperty('--bg-dim'); };
+  const applyBg = (sec, cfg) => { clearBg(sec); if (!cfg) return; if (cfg.type==='class') sec.classList.add(cfg.className); else if (cfg.type==='img') { sec.classList.add('bg-img'); sec.style.setProperty('--bg-image', `url('${toDirectDrive(cfg.image)}')`); sec.style.setProperty('--bg-dim', String(cfg.dim ?? 0.55)); } };
+  Object.entries(SLIDE_BG).forEach(([id,cfg])=>{const sec=document.getElementById(id); if(sec) applyBg(sec,cfg);});
   (function presetIfNone(){
     const slides = document.querySelectorAll('main section');
     const hasBg = s => s && (s.className.match(/\bbg-/) || s.classList.contains('bg-img'));
     const first = slides[0], second = slides[1], third = slides[2];
-    if (first  && !hasBg(first))  applyBg(first,  { type:'class', className:'bg-spotlight' });
-    if (second && !hasBg(second)) applyBg(second, { type:'class', className:'bg-soft-gradient' });
-    if (third  && !hasBg(third))  applyBg(third,  { type:'class', className:'bg-grid' });
+    if (first && !hasBg(first)) applyBg(first,{type:'class',className:'bg-spotlight'});
+    if (second && !hasBg(second)) applyBg(second,{type:'class',className:'bg-soft-gradient'});
+    if (third && !hasBg(third)) applyBg(third,{type:'class',className:'bg-grid'});
   })();
 
-  /* ---------------------------------------------
-   * 4) Prev / Next controls + keyboard
-   * -------------------------------------------*/
+  /* 4) slide controls */
   const controls = document.createElement('div');
   controls.className = 'slide-controls';
-  controls.innerHTML = `
-    <button type="button" aria-label="Previous slide">‹ Prev</button>
-    <button type="button" aria-label="Next slide">Next ›</button>
-  `;
+  controls.innerHTML = `<button type="button" aria-label="Previous slide">‹ Prev</button><button type="button" aria-label="Next slide">Next ›</button>`;
   document.body.appendChild(controls);
   const [btnPrev, btnNext] = controls.querySelectorAll('button');
-
   const getSections = () => Array.from(document.querySelectorAll('main section'));
-  const goToIndex = (i) => {
-    const s = getSections();
-    if (i >= 0 && i < s.length) s[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  const currentIndex = () => {
-    const s = getSections(), y = window.scrollY + window.innerHeight * 0.35;
-    let idx = 0; for (let i=0;i<s.length;i++){ if (s[i].offsetTop <= y) idx = i; } return idx;
-  };
-
-  btnPrev.addEventListener('click', () => goToIndex(currentIndex() - 1));
-  btnNext.addEventListener('click', () => goToIndex(currentIndex() + 1));
-
-  window.addEventListener('keydown', (e) => {
-    const tag = (e.target && e.target.tagName) || '';
-    if (/(INPUT|TEXTAREA|SELECT)/.test(tag)) return;
-    if (['PageDown','ArrowDown',' '].includes(e.key)) { e.preventDefault(); goToIndex(currentIndex()+1); }
-    else if (['PageUp','ArrowUp'].includes(e.key))     { e.preventDefault(); goToIndex(currentIndex()-1); }
-    else if (e.key === 'Home') { e.preventDefault(); goToIndex(0); }
-    else if (e.key === 'End')  { e.preventDefault(); goToIndex(getSections().length - 1); }
+  const goToIndex = (i) => { const s = getSections(); if (i>=0 && i<s.length) s[i].scrollIntoView({behavior:'smooth',block:'start'}); };
+  const currentIndex = () => { const s=getSections(), y=window.scrollY+window.innerHeight*0.35; let idx=0; for(let i=0;i<s.length;i++){ if(s[i].offsetTop<=y) idx=i; } return idx; };
+  btnPrev.addEventListener('click',()=>goToIndex(currentIndex()-1));
+  btnNext.addEventListener('click',()=>goToIndex(currentIndex()+1));
+  window.addEventListener('keydown',(e)=>{ const tag=(e.target&&e.target.tagName)||''; if(/(INPUT|TEXTAREA|SELECT)/.test(tag)) return;
+    if(['PageDown','ArrowDown',' '].includes(e.key)){e.preventDefault();goToIndex(currentIndex()+1);}
+    else if(['PageUp','ArrowUp'].includes(e.key)){e.preventDefault();goToIndex(currentIndex()-1);}
+    else if(e.key==='Home'){e.preventDefault();goToIndex(0);}
+    else if(e.key==='End'){e.preventDefault();goToIndex(getSections().length-1);}
   });
 
-  /* ---------------------------------------------
-   * 5) Reflow after images load (keeps snap smooth)
-   * -------------------------------------------*/
-  window.addEventListener('load', () => {
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
-  });
+  /* 5) reflow */
+  window.addEventListener('load',()=>{setTimeout(()=>window.dispatchEvent(new Event('resize')),50);});
 });
