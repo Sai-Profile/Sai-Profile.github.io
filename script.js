@@ -1,10 +1,10 @@
 // script.js
-// Solar System deck with "Source  Next" per figure (5 images per slide) and robust image failover.
+// "Source  Next" per figure (5 images per slide), robust image failover,
+// and related-topic provider links (NASA, Wikimedia, Unsplash, Pexels) per slide.
+
 document.addEventListener('DOMContentLoaded', () => {
   /* 0) niceties */
   const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
-
-  // Smooth anchor nav
   document.querySelectorAll('nav a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href').slice(1);
@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
       history.replaceState(null, '', `#${id}`);
     });
   });
-
-  // Scroll spy
   const navLinks = Array.from(document.querySelectorAll('nav a[href^="#"]'));
   const sections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
   const linkFor = (id) => navLinks.find(a => a.getAttribute('href') === `#${id}`);
@@ -32,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { rootMargin: '-35% 0px -60% 0px', threshold: [0, 1] });
   sections.forEach(sec => io.observe(sec));
 
-  /* 1) CONTENT — from your slides */
+  /* 1) CONTENT */
   const CONTENT = {
     "contents": {
       kicker: "Slide 1 — Contents",
@@ -162,13 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  /* 2) RELATED IMAGES — 5 per slide (royalty-free sources). Prefer JPG/PNG for reliability. */
+  /* 2) RELATED IMAGES — 5 per slide (Wikimedia/NASA-heavy for reliability) */
   const RI = (urls) => {
     const arr = urls.filter(Boolean).slice(0,5);
     while (arr.length && arr.length < 5) arr.push(arr[0]);
     return arr;
   };
-
   const RELATED_IMAGES = {
     "contents": RI([
       "https://upload.wikimedia.org/wikipedia/commons/c/c3/Solar_sys8.jpg",
@@ -249,7 +246,34 @@ document.addEventListener('DOMContentLoaded', () => {
     ])
   };
 
-  /* 3) render slides (figures get Source + Next + robust loading) */
+  /* 2.1) Optional per-image credit pages (same length as RELATED_IMAGES[slideId]).
+     For simplicity, these use the file URLs; replace with description-page URLs if you want. */
+  const RELATED_ATTR = {
+    contents: RELATED_IMAGES["contents"],
+    "what-is": RELATED_IMAGES["what-is"],
+    sun: RELATED_IMAGES["sun"],
+    inner: RELATED_IMAGES["inner"],
+    "earth-mars": RELATED_IMAGES["earth-mars"],
+    "gas-giants": RELATED_IMAGES["gas-giants"],
+    "ice-giants": RELATED_IMAGES["ice-giants"],
+    "dwarf-kuiper": RELATED_IMAGES["dwarf-kuiper"],
+    "small-bodies": RELATED_IMAGES["small-bodies"],
+    orbits: RELATED_IMAGES["orbits"],
+    recap: RELATED_IMAGES["recap"]
+  };
+
+  /* Provider search links per slide (topic-based) */
+  const providerLinksFor = (topic) => {
+    const q = encodeURIComponent(topic || "");
+    return [
+      { label: "NASA", href: `https://images.nasa.gov/search?q=${q}` },
+      { label: "Wikimedia", href: `https://commons.wikimedia.org/w/index.php?search=${q}` },
+      { label: "Unsplash", href: `https://unsplash.com/s/photos/${q}` },
+      { label: "Pexels", href: `https://www.pexels.com/search/${q}/` }
+    ];
+  };
+
+  /* 3) render slides (figures get Source + Next + provider links + robust loading) */
   const renderSlide = (id, data) => {
     const sec = document.getElementById(id); if (!sec || !data) return;
 
@@ -264,19 +288,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.figure) {
       const imgId = `main-image-${id}`;
       const btnId = `next-related-${id}`;
+      const srcId = `source-${id}`;
+      const linksId = `more-links-${id}`;
+
       const capText = data.figure.cap || '';
-      const capLink = data.figure.link
-        ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>`
-        : '<span>Source</span>';
-      const actions = `${capLink} <button type="button" class="fig-next-btn" id="${btnId}">Next</button>`;
+      const capRight = `<a id="${srcId}" target="_blank" rel="noopener">Source</a> <button type="button" class="fig-next-btn" id="${btnId}">Next</button>`;
+
+      // build provider links markup (topic from h2)
+      const providers = providerLinksFor(data.h2 || id);
+      const linksHTML = providers.map(p => `<a target="_blank" rel="noopener" href="${p.href}">${p.label}</a>`).join(' • ');
 
       figure = `
         <figure>
           <img id="${imgId}" src="" alt="${data.figure.alt || ''}" loading="lazy" referrerpolicy="no-referrer" />
           <figcaption>
             <span class="figcap-text">${capText}</span>
-            <span>${actions}</span>
+            <span>${capRight}</span>
           </figcaption>
+          <div class="fig-links" id="${linksId}">More visuals: ${linksHTML}</div>
         </figure>`;
     }
 
@@ -315,52 +344,50 @@ document.addEventListener('DOMContentLoaded', () => {
     return null;
   }
 
-  /* 5) Next logic for ALL slides with figures (exactly 5 images, wrap, with error recovery) */
+  /* 5) Next logic with source updating and error recovery */
   (async function initAllNextButtons(){
     for (const id of Object.keys(CONTENT)) {
       const img = document.getElementById(`main-image-${id}`);
       const btn = document.getElementById(`next-related-${id}`);
-      if (!img || !btn) continue;
+      const sourceA = document.getElementById(`source-${id}`);
+      if (!img || !btn || !sourceA) continue;
 
-      // Build list: prefer RELATED_IMAGES; pad to 5 (function RI already pads if possible)
       let list = (RELATED_IMAGES[id] || []).slice(0, 5);
-      // If still empty, try figure.src as last resort
       const initialSrc = CONTENT[id]?.figure?.src || '';
       if (!list.length && initialSrc) list = RI([initialSrc]);
-      if (!list.length) list = [""]; // absolute fallback to avoid errors
+      if (!list.length) list = [""];
 
-      // Choose the first that actually loads
+      const creditList = (RELATED_ATTR[id] || list).slice(0, 5);
+      while (list.length < 5) list.push(list[0]);
+      while (creditList.length < 5) creditList.push(creditList[0] || list[0]);
+
       const good = await firstWorking(list);
       img.src = good || list[0];
 
-      // Maintain index aligned to current src
       let idx = list.findIndex(u => u && img.src.endsWith(u));
       if (idx < 0) idx = 0;
+      sourceA.href = creditList[idx] || providerLinksFor(CONTENT[id]?.h2 || id)[0].href;
 
-      // Click handler with preload & skip broken
-      btn.addEventListener('click', async () => {
+      const advanceTo = async (startIdx) => {
+        let nextIdx = startIdx;
         for (let step = 0; step < list.length; step++) {
-          const nextIdx = (idx + 1) % list.length;
+          nextIdx = (nextIdx + 1) % list.length;
           try {
             const ok = await preloadOnce(list[nextIdx]);
             img.src = ok;
-            idx = nextIdx;
-            break;
-          } catch { idx = nextIdx; }
+            sourceA.href = creditList[nextIdx] || sourceA.href;
+            return nextIdx;
+          } catch { /* skip broken */ }
         }
+        return startIdx;
+      };
+
+      btn.addEventListener('click', async () => {
+        idx = await advanceTo(idx);
       });
 
-      // Auto-advance on runtime error
       img.addEventListener('error', async () => {
-        for (let step = 0; step < list.length; step++) {
-          const nextIdx = (idx + 1) % list.length;
-          try {
-            const ok = await preloadOnce(list[nextIdx]);
-            img.src = ok;
-            idx = nextIdx;
-            break;
-          } catch { idx = nextIdx; }
-        }
+        idx = await advanceTo(idx);
       });
     }
   })();
@@ -383,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   Object.entries(SLIDE_BG).forEach(([id, cfg]) => { const sec = document.getElementById(id); if (sec) applyBg(sec, cfg); });
-  // Ensure first 3 slides have a background if none applied
   (function presetIfNone(){
     const slides = document.querySelectorAll('main section');
     const hasBg = s => s && (s.className.match(/\bbg-/) || s.classList.contains('bg-img'));
