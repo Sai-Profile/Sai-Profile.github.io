@@ -1,7 +1,6 @@
 // script.js
-// Injects your 5 slides, applies per-slide backgrounds from JS,
-// adds smooth nav + Prev/Next controls, and (NEW) a single “Next” button
-// beside Source on Slide 4 that cycles through ~5 related images.
+// Renders slides, backgrounds, nav & controls.
+// NEW: Every slide figure shows “Source  Next”; Next cycles ~5 images.
 
 document.addEventListener('DOMContentLoaded', () => {
   /* ---------------------------------------------
@@ -136,8 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ---------------------------------------------
-   * 2) Render into existing <section id="...">
-   *    (Adds a “Next” button beside Source for #rq only)
+   * 2) Render slides (adds “Next” beside Source for ALL figures)
    * -------------------------------------------*/
   const renderSlide = (id, data) => {
     const sec = document.getElementById(id);
@@ -145,10 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const kicker = data.kicker ? `<div class="kicker">${data.kicker}</div>` : '';
     const subtitle = data.subtitle ? `<p class="subtitle">${data.subtitle}</p>` : '';
-    const bulletsTop = data.bulletsTop?.length
-      ? `<ul>${data.bulletsTop.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
-    const bullets = data.bullets?.length
-      ? `<ul>${data.bullets.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
+    const bulletsTop = data.bulletsTop?.length ? `<ul>${data.bulletsTop.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
+    const bullets = data.bullets?.length ? `<ul>${data.bullets.map(li => `<li>${li}</li>`).join('')}</ul>` : '';
     const explain = data.explain ? `<div class="explain">${data.explain}</div>` : '';
     const script = data.script ? `<p class="script">${data.script}</p>` : '';
 
@@ -156,14 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.figure?.src) {
       const capText = data.figure.cap ? data.figure.cap : '';
       const capLink = data.figure.link ? `<a target="_blank" rel="noopener" href="${data.figure.link}">Source</a>` : '';
-      const imgId = (id === 'rq') ? ' id="main-image"' : '';
-      const actions = (id === 'rq')
-        ? `${capLink} <button type="button" class="fig-next-btn" id="next-related">Next</button>`
-        : `${capLink}`;
+      const imgId = `main-image-${id}`;
+      const btnId = `next-related-${id}`;
+      const actions = `${capLink} <button type="button" class="fig-next-btn" id="${btnId}">Next</button>`;
 
       figure = `
         <figure>
-          <img${imgId} src="${data.figure.src}" alt="${data.figure.alt || ''}" loading="lazy" />
+          <img id="${imgId}" src="${data.figure.src}" alt="${data.figure.alt || ''}" loading="lazy" />
           <figcaption>
             <span class="figcap-text">${capText}</span>
             <span>${actions}</span>
@@ -190,35 +185,65 @@ document.addEventListener('DOMContentLoaded', () => {
   Object.entries(CONTENT).forEach(([id, data]) => renderSlide(id, data));
 
   /* ---------------------------------------------
-   * 2.5) Related images: single “Next” button carousel
+   * 2.5) Related images per slide (5 options each)
+   *  - Replace with local /images/... paths if you prefer offline
    * -------------------------------------------*/
-  // Replace these URLs with your local files if you prefer (e.g., "images/hiring/a.jpg")
   const RELATED_IMAGES = {
-    hiring: [
+    title: [
+      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80'
+    ],
+    problem: [
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1529336953121-ad522f1e1f19?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1584697964192-30a1b36f1f1d?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80'
+    ],
+    aim: [
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Graph_icon.svg/640px-Graph_icon.svg.png',
+      'https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1487611459768-bd414656ea10?auto=format&fit=crop&w=1200&q=80'
+    ],
+    rq: [
       'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80'
+    ],
+    scope: [
+      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80'
     ]
   };
 
-  (function initNextButton() {
-    const mainImg = document.getElementById('main-image');
-    const nextBtn = document.getElementById('next-related');
-    if (!mainImg || !nextBtn) return;
+  // Initialize the Next buttons for ALL slides that have figures
+  (function initAllNextButtons() {
+    Object.keys(CONTENT).forEach((id) => {
+      const img = document.getElementById(`main-image-${id}`);
+      const btn = document.getElementById(`next-related-${id}`);
+      if (!img || !btn) return;
 
-    const options = RELATED_IMAGES.hiring.slice(0, 5);
-    let idx = options.findIndex(u => mainImg.src.endsWith(u));
-    if (idx < 0) idx = 0;
+      // Fallback to the slide's own figure src if no list provided
+      const base = CONTENT[id]?.figure?.src ? [CONTENT[id].figure.src] : [];
+      const list = (RELATED_IMAGES[id] && RELATED_IMAGES[id].length ? RELATED_IMAGES[id] : base).slice(0, 5);
 
-    function show(i) {
-      mainImg.src = options[i % options.length];
-    }
+      let idx = list.findIndex(u => img.src.endsWith(u));
+      if (idx < 0) idx = 0;
 
-    nextBtn.addEventListener('click', () => {
-      idx = (idx + 1) % options.length;
-      show(idx);
+      btn.addEventListener('click', () => {
+        idx = (idx + 1) % list.length;
+        img.src = list[idx];
+      });
     });
   })();
 
