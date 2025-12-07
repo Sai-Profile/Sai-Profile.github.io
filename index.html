@@ -16,20 +16,16 @@
         <h1>The Solar System — Overview and Key Facts</h1>
       </div>
 
-      <nav aria-label="Sections">
-        <a href="#contents">Contents</a>
-        <a href="#what-is">What Is the Solar System?</a>
-        <a href="#sun">The Sun</a>
-        <a href="#inner">Inner Planets</a>
-        <a href="#earth-mars">Earth & Mars</a>
-        <a href="#gas-giants">Gas Giants</a>
-        <a href="#ice-giants">Ice Giants</a>
-        <a href="#dwarf-kuiper">Dwarf Planets & Kuiper Belt</a>
-        <a href="#small-bodies">Asteroids & Comets</a>
-        <a href="#orbits">Orbits & Gravity</a>
-        <a href="#recap">Fun Facts & Recap</a>
+      <!-- Dropdown nav -->
+      <nav class="nav" aria-label="Sections">
+        <button id="navToggle" class="nav-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="navMenu">
+          Sections
+          <svg aria-hidden="true" class="chev" width="14" height="14" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div id="navMenu" class="nav-menu" role="menu" hidden></div>
       </nav>
 
+      <!-- Background switcher -->
       <div class="bg-switch" role="group" aria-label="Background switcher">
         <label for="bgSelect" class="small">Background</label>
         <select id="bgSelect">
