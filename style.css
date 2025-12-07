@@ -193,7 +193,7 @@ figcaption{
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:.85em}
 }
 
-/* ---------- Background pack (fits your variables) ---------- */
+/* ---------- Background pack ---------- */
 section { position: relative; isolation: isolate; overflow: hidden; }
 
 /* 1) Solid paper */
@@ -295,5 +295,5 @@ main section img:not(figure img) {
 }
 section::after{ content:""; display:block; clear:both; }
 
-/* --- Small spacing tweak: keep Next near Source --- */
+/* Keep “Next” close to Source */
 figcaption span:last-child .fig-next-btn { margin-left: 10px; }
