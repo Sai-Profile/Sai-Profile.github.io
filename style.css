@@ -1,36 +1,251 @@
-/* ===== DARK PRESENTATION MODE ===== */
+/* ===== Classic research presentation theme (Slide mode) ===== */
+
+/* ---------- Global variables (BLACK DEFAULT) ---------- */
 :root{
   --bg:#000;
-  --bg-soft:#0f0f12;
-  --ink:#f5f5f7;
-  --muted:#b8b8c2;
+  --bg-soft:#0f1116;
+  --ink:#f1f1f4;
+  --muted:#b8bcc6;
   --accent:#4da3ff;
   --border:#222;
 }
 
-body{
+/* Optional system light preference (kept, but black remains default) */
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#000;
+    --bg-soft:#0f1116;
+    --ink:#f1f1f4;
+    --muted:#b8bcc6;
+    --border:#222;
+  }
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
   background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  line-height:1.6;
+  text-rendering:optimizeLegibility;
+  font-size:18px;
+}
+
+/* ---------- Header & brand ---------- */
+header{
+  position:sticky;
+  top:0;
+  background:rgba(0,0,0,.9);
+  border-bottom:1px solid var(--border);
+  z-index:20;
+  backdrop-filter:saturate(1.06) blur(6px);
+}
+
+.container{max-width:1120px;margin:auto;padding:0 20px}
+
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:14px 0;
+}
+
+.brand h1{
+  font-size:20px;
+  margin:0;
+  color:var(--ink);
+  font-weight:700;
+}
+
+.pill{
+  display:inline-block;
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ---------- Dropdown nav ---------- */
+.nav{
+  position:relative;
+  display:inline-block;
+  margin:8px 0 12px;
+}
+
+.nav-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--ink);
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.nav-toggle:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+.nav-toggle .chev{transition:transform .15s ease}
+.nav-toggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
+
+.nav-menu{
+  position:absolute;
+  left:0;
+  top:calc(100% + 8px);
+  z-index:25;
+  min-width:270px;
+  max-height:70vh;
+  overflow:auto;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  padding:8px;
+}
+
+.nav-menu a{
+  display:flex;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:8px;
+  color:var(--ink);
+  text-decoration:none;
+}
+
+.nav-menu a:hover{
+  background:var(--bg-soft);
+}
+
+.nav-menu a.active{
+  outline:2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+}
+
+/* ---------- Background switcher ---------- */
+.bg-switch{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin:8px 0 14px;
+}
+
+.bg-switch .small{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.bg-switch select{
+  appearance:none;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--bg-soft);
   color:var(--ink);
 }
 
-/* Sections */
+.btn-mini{
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--ink);
+  padding:7px 10px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.btn-mini:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+/* ---------- Slide mode ---------- */
+main{scroll-snap-type:y mandatory}
+
 section{
+  min-height:calc(100vh - 92px);
+  display:grid;
+  align-content:center;
+  padding:64px 0;
+  border-bottom:1px solid var(--border);
+  scroll-snap-align:start;
   background:var(--bg);
 }
 
-/* Figures */
+.kicker{
+  font-variant:small-caps;
+  color:var(--muted);
+  letter-spacing:.6px;
+  margin-bottom:6px;
+}
+
+.slide-title{
+  font-size:clamp(34px,5vw,44px);
+  margin:0 0 10px;
+  line-height:1.2;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:clamp(18px,2.2vw,22px);
+  margin:0 0 26px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1.6fr .9fr;
+  gap:28px;
+  align-items:center;
+}
+
+@media (max-width:980px){
+  section{padding:40px 0}
+  .grid{grid-template-columns:1fr}
+}
+
+ul{margin:0 0 16px 1.1rem}
+li{margin:8px 0}
+
+.script{
+  font-style:italic;
+  color:var(--muted);
+}
+
+/* ---------- Figures ---------- */
 figure{
-  background:var(--bg-soft);
+  margin:0;
   border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--bg-soft);
+  max-width:520px;
+  justify-self:end;
 }
 
-/* Navigation & header */
-header{
-  background:rgba(0,0,0,0.85);
-  border-bottom:1px solid var(--border);
+figure img{
+  display:block;
+  width:100%;
 }
 
-/* Next image button */
+figcaption{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  font-size:.9rem;
+  color:var(--muted);
+  padding:10px 12px;
+  border-top:1px solid var(--border);
+}
+
+/* ---------- Next image button ---------- */
 .fig-next-btn{
   appearance:none;
   border:1px solid var(--border);
@@ -38,10 +253,68 @@ header{
   color:var(--ink);
   padding:6px 10px;
   border-radius:8px;
-  cursor:pointer;
   font-size:.85rem;
+  cursor:pointer;
 }
+
 .fig-next-btn:hover{
   border-color:var(--accent);
   color:var(--accent);
+}
+
+/* ---------- Footer ---------- */
+.footer{
+  padding:40px 0 56px;
+  color:var(--muted);
+  font-size:.95rem;
+  border-top:1px solid var(--border);
+}
+
+/* ---------- Slide controls ---------- */
+.slide-controls{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:30;
+  display:flex;
+  gap:10px;
+}
+
+.slide-controls button{
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--ink);
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.slide-controls button:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+/* ---------- Background presets (unchanged, now dark-aware) ---------- */
+section{position:relative;isolation:isolate;overflow:hidden}
+
+.bg-spotlight::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:
+    radial-gradient(900px 600px at 50% 0%, rgba(255,255,255,.06), transparent 60%);
+}
+
+.bg-grid{
+  background:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px) 0 0/100% 28px,
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px) 0 0/28px 100%;
+}
+
+/* ---------- Print ---------- */
+@media print{
+  header,.nav,.footer,.slide-controls,.bg-switch{display:none!important}
+  body{background:#fff;color:#000}
+  section{page-break-after:always;border:none}
 }
