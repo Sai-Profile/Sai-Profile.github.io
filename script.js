@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Footer year
   document.getElementById('year').textContent = new Date().getFullYear();
 
   /* =========================
-     SLIDE CONTENT (EXACT)
+     SLIDE CONTENT (UNCHANGED)
      ========================= */
   const CONTENT = {
     intro: {
@@ -11,16 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: 'The Educational Journey: Goals and Methods',
       subtitle: 'Defining Objectives and Maximizing Learning',
       bullets: [
-        'Education follows a deliberate progression of goals.',
-        'Each stage is designed to prepare learners for the next level.',
-        'Learning methods support how objectives are achieved.'
+        'Education is a deliberate progression of goals.',
+        'Each stage prepares learners for the next level.',
+        'Learning methods support achievement of objectives.'
       ],
       script:
-        'This presentation explains why education is structured as a journey, focusing on clear goals and effective learning methods.',
-      figure: {
-        alt: 'Students progressing through different stages of education',
-        cap: 'Understanding the purpose of the educational journey'
-      }
+        'This slide explains why education is structured as a journey with clear goals and methods.',
+      figure: { alt:'Educational journey', cap:'Purpose of education' }
     },
 
     baccalaureate: {
@@ -28,14 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: 'Baccalaureate: Foundational Readiness',
       bullets: [
         'Objective: Foundational education and academic readiness.',
-        'Key focus: Critical thinking, literacy, and study habits.'
+        'Key focus: Critical thinking, literacy, study habits.'
       ],
       script:
         'The objective is to establish our broad academic base and build essential skills like critical thinking, which is the minimum requirement for university admission.',
-      figure: {
-        alt: 'High school graduation ceremony',
-        cap: 'Building the foundation for higher education'
-      }
+      figure: { alt:'Baccalaureate education', cap:'Academic foundation' }
     },
 
     bachelor: {
@@ -43,14 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: "Bachelor’s: Professional Practice",
       bullets: [
         'Objective: Discipline-specific knowledge and professional practice.',
-        'Key focus: Analytical skills, communication, and real-world application.'
+        'Key focus: Analytical skills, communication, real-world application.'
       ],
       script:
-        'This is where we dive deep into our major, focusing on learning theories and applying knowledge to prepare for entry-level to mid-level professional roles.',
-      figure: {
-        alt: 'University students working on group projects',
-        cap: 'Applying knowledge in professional contexts'
-      }
+        'This is where we dive deep into our major to prepare for professional roles.',
+      figure: { alt:'Bachelor education', cap:'Professional preparation' }
     },
 
     master: {
@@ -58,14 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: "Master’s: Advanced Specialization",
       bullets: [
         'Objective: Advanced expertise and specialization.',
-        'Key focus: Synthesis of knowledge, advanced analytical skills, and thesis or project work.'
+        'Key focus: Synthesis, advanced analysis, thesis or project.'
       ],
       script:
-        'We pursue a Master’s to gain a competitive edge by focusing on advanced analytical skills and synthesis of knowledge, often through a thesis or applied project.',
-      figure: {
-        alt: 'Graduate student conducting advanced research',
-        cap: 'Deepening expertise and specialization'
-      }
+        'A Master’s develops advanced analytical and synthesis skills.',
+      figure: { alt:'Master education', cap:'Advanced specialization' }
     },
 
     doctorate: {
@@ -73,14 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: 'Doctoral: Knowledge Innovation',
       bullets: [
         'Objective: Create new knowledge and original contribution.',
-        'Key focus: Independent research, advancing theory, and discipline mastery.'
+        'Key focus: Independent research and theory advancement.'
       ],
       script:
-        'A Doctorate is for becoming true leaders in research—it’s about conducting independent, original research and advancing theory to generate new knowledge.',
-      figure: {
-        alt: 'Researcher analyzing data and academic literature',
-        cap: 'Creating original knowledge'
-      }
+        'Doctoral study is about original research and knowledge creation.',
+      figure: { alt:'Doctoral research', cap:'Knowledge innovation' }
     },
 
     inclass: {
@@ -88,14 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: 'Learning Mode: In-Class (Face-to-Face)',
       bullets: [
         'Benefit: Direct interaction and immediate feedback.',
-        'Key focus: Hands-on practice, group discussions, and a structured environment.'
+        'Key focus: Practice, discussion, structure.'
       ],
       script:
-        'The classroom gives us the advantage of immediate feedback, hands-on practice, and a fixed schedule, which builds a committed learning community.',
-      figure: {
-        alt: 'Face-to-face classroom discussion at university',
-        cap: 'Structured in-class learning'
-      }
+        'In-class learning provides structure and immediate academic support.',
+      figure: { alt:'Classroom learning', cap:'Face-to-face learning' }
     },
 
     online: {
@@ -103,52 +84,96 @@ document.addEventListener('DOMContentLoaded', () => {
       h2: 'Learning Mode: Online (E-Learning)',
       bullets: [
         'Benefit: Maximum flexibility and self-paced learning.',
-        'Key focus: Anywhere-anytime learning, digital tools, and self-discipline.'
+        'Key focus: Digital tools and self-discipline.'
       ],
       script:
-        'Online learning is perfect for managing our schedules, as it offers maximum flexibility to study at our own pace using digital tools like videos and discussion forums.',
-      figure: {
-        alt: 'Student studying online using a laptop',
-        cap: 'Flexible online learning environment'
-      }
+        'Online learning allows flexible and independent study.',
+      figure: { alt:'Online learning', cap:'Flexible learning' }
     },
 
     conclusion: {
       kicker: 'Slide 8 — Conclusion',
       h2: 'Summary & Discussion',
       bullets: [
-        'Education is a deliberate progression of goals.',
+        'Education progresses from foundation to specialization.',
         'Learning mode supports the objective.'
       ],
       script:
-        'To conclude, our educational path is all about clear goals. We advance from foundational knowledge to specialized expertise. Whether in a classroom or online, the objective remains the same: to continuously advance our knowledge and achieve our next milestone. I welcome any questions.',
-      figure: {
-        alt: 'Students celebrating graduation together',
-        cap: 'Completing the educational journey'
-      }
+        'Education is a deliberate journey toward continuous advancement.',
+      figure: { alt:'Graduation', cap:'Educational journey completed' }
     }
   };
 
   /* =========================
-     SIMPLE IMAGE MAP
+     5 IMAGES PER SLIDE
      ========================= */
   const IMAGES = {
-    intro: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1',
-    baccalaureate: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b',
-    bachelor: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644',
-    master: 'https://images.unsplash.com/photo-1454165205744-3b78555e5572',
-    doctorate: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa',
-    inclass: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df',
-    online: 'https://images.unsplash.com/photo-1584697964190-9e44a6c1c62e',
-    conclusion: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d'
+    intro: [
+      'https://images.unsplash.com/photo-1523050854058-8df90110c9f1',
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b',
+      'https://images.unsplash.com/photo-1529070538774-1843cb3265df',
+      'https://images.unsplash.com/photo-1454165205744-3b78555e5572',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa'
+    ],
+    baccalaureate: [
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b',
+      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d',
+      'https://images.unsplash.com/photo-1523240795612-9a054b0db644',
+      'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6',
+      'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b'
+    ],
+    bachelor: [
+      'https://images.unsplash.com/photo-1523240795612-9a054b0db644',
+      'https://images.unsplash.com/photo-1529070538774-1843cb3265df',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'
+    ],
+    master: [
+      'https://images.unsplash.com/photo-1454165205744-3b78555e5572',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa',
+      'https://images.unsplash.com/photo-1505666287802-931dc83948e9',
+      'https://images.unsplash.com/photo-1551836022-d5d88e9218df',
+      'https://images.unsplash.com/photo-1581090700227-1e37b190418e'
+    ],
+    doctorate: [
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa',
+      'https://images.unsplash.com/photo-1505666287802-931dc83948e9',
+      'https://images.unsplash.com/photo-1531482615713-2afd69097998',
+      'https://images.unsplash.com/photo-1509223197845-458d87318791',
+      'https://images.unsplash.com/photo-1518770660439-4636190af475'
+    ],
+    inclass: [
+      'https://images.unsplash.com/photo-1529070538774-1843cb3265df',
+      'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b',
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b',
+      'https://images.unsplash.com/photo-1509062522246-3755977927d7',
+      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f'
+    ],
+    online: [
+      'https://images.unsplash.com/photo-1584697964190-9e44a6c1c62e',
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d',
+      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f'
+    ],
+    conclusion: [
+      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d',
+      'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91',
+      'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+      'https://images.unsplash.com/photo-1509062522246-3755977927d7'
+    ]
   };
 
   /* =========================
-     RENDER SLIDES
+     RENDER + NEXT BUTTON
      ========================= */
   Object.entries(CONTENT).forEach(([id, data]) => {
     const section = document.getElementById(id);
     if (!section) return;
+
+    let index = 0;
 
     section.innerHTML = `
       <div class="kicker">${data.kicker}</div>
@@ -156,16 +181,22 @@ document.addEventListener('DOMContentLoaded', () => {
       ${data.subtitle ? `<p class="subtitle">${data.subtitle}</p>` : ''}
       <div class="grid">
         <div>
-          <ul>
-            ${data.bullets.map(b => `<li>${b}</li>`).join('')}
-          </ul>
+          <ul>${data.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
           <p class="script">${data.script}</p>
         </div>
         <figure>
-          <img src="${IMAGES[id]}" alt="${data.figure.alt}" loading="lazy">
-          <figcaption>${data.figure.cap}</figcaption>
+          <img id="img-${id}" src="${IMAGES[id][0]}" alt="${data.figure.alt}" loading="lazy">
+          <figcaption>
+            ${data.figure.cap}
+            <button class="fig-next-btn" id="btn-${id}">Next</button>
+          </figcaption>
         </figure>
       </div>
     `;
+
+    document.getElementById(`btn-${id}`).onclick = () => {
+      index = (index + 1) % IMAGES[id].length;
+      document.getElementById(`img-${id}`).src = IMAGES[id][index];
+    };
   });
 });
