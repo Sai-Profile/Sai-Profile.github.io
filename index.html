@@ -1,10 +1,9 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Solar System — Overview and Key Facts</title>
+  <title>The Educational Journey — Degrees & Learning Modes</title>
   <meta name="color-scheme" content="light dark" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -12,54 +11,35 @@
   <header>
     <div class="container">
       <div class="brand">
-        <span class="pill">Astronomy</span>
-        <h1>The Solar System — Overview and Key Facts</h1>
+        <span class="pill">Education</span>
+        <h1>The Educational Journey — Degrees & Learning Modes</h1>
       </div>
 
-      <!-- Dropdown nav -->
       <nav class="nav" aria-label="Sections">
-        <button id="navToggle" class="nav-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="navMenu">
+        <button id="navToggle" class="nav-toggle" aria-haspopup="true" aria-expanded="false">
           Sections
-          <svg aria-hidden="true" class="chev" width="14" height="14" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg aria-hidden="true" class="chev" width="14" height="14" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
         </button>
-        <div id="navMenu" class="nav-menu" role="menu" hidden></div>
+        <div id="navMenu" class="nav-menu" hidden></div>
       </nav>
-
-      <!-- Background switcher -->
-      <div class="bg-switch" role="group" aria-label="Background switcher">
-        <label for="bgSelect" class="small">Background</label>
-        <select id="bgSelect">
-          <option value="preset">Preset (1–3)</option>
-          <option value="none">Default</option>
-          <option value="solid">Solid</option>
-          <option value="soft">Soft gradient</option>
-          <option value="grid">Grid</option>
-          <option value="spotlight">Spotlight</option>
-          <option value="mesh">Mesh</option>
-          <option value="grain">Grain</option>
-          <option value="img">Image…</option>
-        </select>
-        <button id="bgReset" class="btn-mini" type="button" title="Reset per-slide backgrounds">Reset slides</button>
-      </div>
     </div>
   </header>
 
   <main class="container">
-    <section id="contents"></section>
-    <section id="what-is"></section>
-    <section id="sun"></section>
-    <section id="inner"></section>
-    <section id="earth-mars"></section>
-    <section id="gas-giants"></section>
-    <section id="ice-giants"></section>
-    <section id="dwarf-kuiper"></section>
-    <section id="small-bodies"></section>
-    <section id="orbits"></section>
-    <section id="recap"></section>
+    <section id="intro"></section>
+    <section id="baccalaureate"></section>
+    <section id="bachelor"></section>
+    <section id="master"></section>
+    <section id="doctorate"></section>
+    <section id="inclass"></section>
+    <section id="online"></section>
+    <section id="conclusion"></section>
   </main>
 
   <footer class="footer container">
-    <p>© <span id="year"></span> Solar System Deck — Educational Use.</p>
+    <p>© <span id="year"></span> Educational Journey — Academic Use.</p>
   </footer>
 
   <script src="script.js" defer></script>
